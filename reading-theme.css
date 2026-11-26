@@ -1,0 +1,28 @@
+/* Interpolating one inherited percentage moves every ink and paper colour together. */
+@property --reading-dusk {
+  syntax: "<percentage>";
+  inherits: true;
+  initial-value: 0%;
+}
+
+:root {
+  --reading-dusk: 0%;
+  --paper: color-mix(in srgb, #f7f7f1, #e6d4ae var(--reading-dusk));
+  --sheet: color-mix(in srgb, #fffefa, #f0dfbd var(--reading-dusk));
+  --ink: color-mix(in srgb, #172f30, #382e23 var(--reading-dusk));
+  --muted: color-mix(in srgb, #526561, #5b4d39 var(--reading-dusk));
+  --green: color-mix(in srgb, #16534e, #594a2d var(--reading-dusk));
+  --rule: color-mix(in srgb, #cfd7cb, #b7a785 var(--reading-dusk));
+  --focus: color-mix(in srgb, #a44c35, #854424 var(--reading-dusk));
+  --wash: color-mix(in srgb, #e9eee6, #dac8a3 var(--reading-dusk));
+  --edge: color-mix(in srgb, #809186, #887553 var(--reading-dusk));
+  --chosen: color-mix(in srgb, #e8efea, #d8c397 var(--reading-dusk));
+  --on-accent: color-mix(in srgb, #fff, #fff1d1 var(--reading-dusk));
+  transition: --reading-dusk 800ms ease-in-out;
+}
+
+:root[data-reading-theme="dusk"] { --reading-dusk: 100%; }
+
+@media (prefers-reduced-motion: reduce) {
+  :root { transition: none; }
+}

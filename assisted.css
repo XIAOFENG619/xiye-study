@@ -1,0 +1,17 @@
+#assisted #task, #assisted #empty { border-top: 1px solid var(--rule); padding-top: 1.5rem; }
+#assisted #step, #assisted #clue, #assisted #notice { color: var(--muted); }
+#assisted #step { margin: 0 0 .65rem; font-size: .92rem; }
+#assisted #prompt { margin: 0; font-size: clamp(1.35rem, 3vw, 1.85rem); line-height: 1.55; }
+#assisted #context { margin: .65rem 0 1.35rem; font: 500 1.2rem/1.9 var(--serif); }
+#assisted #context strong { font-weight: 600; text-emphasis: filled dot; text-emphasis-position: under; }
+#assisted #choices { display: grid; gap: .55rem; }
+#assisted .answer { grid-template-columns: 1fr auto; min-height: 3.2rem; }
+#assisted .choice-value { font-size: 1.15rem; }
+.write-row, .tools, .assist-actions { display: flex; gap: .6rem 1rem; align-items: center; flex-wrap: wrap; }
+.write-row { margin-top: .4rem; }
+#assisted #answer { min-width: 0; width: min(19rem, 100%); padding: .6rem .8rem; border: 1px solid var(--edge); border-radius: 4px; background: var(--sheet); }
+#assisted .tools { margin-top: .7rem; }
+#assisted #feedback { position: static; width: auto; height: auto; overflow: visible; clip-path: none; margin: 1rem 0; padding: .8rem 1rem; border-left: 2px solid var(--edge); background: var(--wash); }
+#assisted #feedback p { margin: .2rem 0 0; }
+#assisted #notice:empty, #assisted #context:empty { display: none; }
+.assist-actions { margin-top: 1.25rem; }

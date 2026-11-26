@@ -1,0 +1,263 @@
+.workbook {
+  --page-line: var(--rule);
+  --page-muted: var(--muted);
+  --page-accent: var(--green);
+  max-width: 62rem;
+  margin: 0 auto;
+  color: var(--ink);
+}
+.folio-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: .5rem 1rem;
+  padding-block: .6rem 1.25rem;
+  border-bottom: 2px solid var(--page-accent);
+}
+.folio-head h1 {
+  margin: 0;
+  font: 600 2.65rem/1.25 var(--serif);
+}
+.folio-head > span, .worksheet-note, .source-line {
+  color: var(--page-muted);
+  font: 400 .92rem/1.7 var(--sans);
+}
+.study-paper, .catalog-sheet, .record-book {
+  padding-block: 2.15rem 2.5rem;
+  overflow-wrap: anywhere;
+}
+.workbook h2, .workbook legend.question {
+  margin: 0 0 1.35rem;
+  padding: 0;
+  font: 600 1.7rem/1.55 var(--serif);
+  letter-spacing: .015em;
+}
+.workbook h3 {
+  font: 600 1.27rem/1.55 var(--serif);
+  margin: 1.75rem 0 .6rem;
+}
+.study-paper fieldset { min-width: 0; border: 0; margin: 0; padding: 0; }
+.worksheet-note { margin: -.55rem 0 1.15rem; }
+.workbook .actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .7rem 1.2rem;
+  align-items: center;
+  margin-top: 1.85rem;
+}
+.choices { display: grid; }
+.choice-row {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr) 1.25rem;
+  gap: 1rem;
+  align-items: center;
+  padding: 1.03rem 1rem;
+  border-top: 1px solid var(--page-line);
+  cursor: pointer;
+  transition: background-color .14s ease;
+}
+.choice-row:last-child { border-bottom: 1px solid var(--page-line); }
+.choice-row .choice-letter { grid-column: 1; grid-row: 1; }
+.choice-row .choice-words { grid-column: 2; grid-row: 1; }
+.choice-row input { grid-column: 3; grid-row: 1; }
+.choice-row:hover, .word-chips label:hover { background: var(--wash); }
+.choice-row:has(input:checked), .word-chips label:has(input:checked) { background: var(--chosen); }
+.choice-row:has(input:focus-visible), .word-chips label:has(input:focus-visible) {
+  outline: 2px solid var(--page-accent);
+  outline-offset: -2px;
+}
+.choice-row input, .word-chips input {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--page-accent);
+  margin: 0;
+}
+.choice-letter, .answer-letter {
+  font: 600 1.35rem/1.4 Georgia, var(--serif);
+  color: var(--page-accent);
+}
+.choice-row:has(input:checked) .choice-letter { font-weight: 700; }
+.choice-words, .word-chips {
+  display: grid;
+  align-items: baseline;
+  gap: .48rem .8rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 1.38fr);
+  font: 500 1.19rem/1.9 var(--serif);
+}
+.choice-words > span { min-width: 0; }
+.term, .shown-reading { display: inline-block; }
+.marked {
+  text-emphasis: filled dot;
+  text-emphasis-position: under right;
+  -webkit-text-emphasis: filled dot;
+  -webkit-text-emphasis-position: under;
+}
+.shown-reading {
+  color: var(--page-muted);
+  font: 400 .91em/1.6 var(--sans);
+  white-space: nowrap;
+}
+.excerpt {
+  margin: .3rem 0 1.5rem;
+  max-width: 43rem;
+  font: 500 1.26rem/1.95 var(--serif);
+}
+blockquote.excerpt { padding: 0 0 .85rem; }
+.poem-scene { margin-bottom: 1.75rem; }
+.pick-row { display: grid; grid-template-columns: 2rem minmax(0, 1fr); gap: 1rem; align-items: center; padding: .5rem 0; }
+.pick-row:has(> :only-child) { grid-template-columns: 1fr; }
+.word-chips { align-items: stretch; }
+.word-chips label {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  min-height: 2.85rem;
+  padding: .25rem .55rem;
+  border: 1px solid var(--page-line);
+  border-radius: 3px;
+  cursor: pointer;
+}
+.word-chips input { flex-shrink: 0; }
+.word-chips label:has(input:checked) { border-color: var(--page-accent); }
+.study-paper .field {
+  display: grid;
+  justify-items: start;
+  align-items: center;
+  gap: .5rem 1rem;
+  margin: 1rem 0;
+  font: 500 .98rem/1.65 var(--sans);
+}
+.study-paper .field input { width: min(100%, 17rem); }
+.study-paper .field textarea {
+  width: 100%;
+  min-height: 8.5rem;
+  padding: .7rem .95rem;
+  font: 500 1.14rem/1.85 var(--serif);
+  resize: vertical;
+}
+.study-paper form[data-form="poetry"] { max-width: 43rem; }
+.study-paper .write-entry {
+  max-width: 41rem;
+  grid-template-columns: minmax(10rem, 1fr) minmax(7rem, 16rem);
+  padding: .6rem 0 1rem;
+  border-bottom: 1px solid var(--page-line);
+}
+.write-entry > span { font: 500 1.18rem/1.7 var(--serif); }
+.meaning { display: block; color: var(--page-muted); font: 400 .9rem/1.6 var(--sans); }
+.blank { color: var(--page-accent); white-space: nowrap; }
+.answer-lines {
+  border-block: 1px solid var(--page-line);
+  margin-top: 1.6rem;
+  padding: .3rem 0;
+}
+.answer-line { display: flex; gap: 1.5rem; align-items: baseline; padding: .48rem .2rem; }
+.answer-letter { width: 1.2rem; font-size: 1.05rem; flex-shrink: 0; }
+.poem-comparison {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: baseline;
+  gap: .95rem 1.5rem;
+  padding: 1.3rem 0;
+  border-block: 1px solid var(--page-line);
+  max-width: 44rem;
+}
+.poem-comparison dt { font-size: .9rem; color: var(--page-muted); }
+.poem-comparison dd { font: 500 1.22rem/1.65 var(--serif); margin: 0; white-space: pre-wrap; }
+.check-line { border-top: 1px solid var(--page-line); padding: .85rem 0; }
+.check-line > strong { font: 600 1.18rem/1.7 var(--serif); }
+.check-line p { margin: .2rem 0; }
+.repair-form, .repair-form label { display: flex; align-items: center; flex-wrap: wrap; gap: .6rem; }
+.repair-form { margin-top: .8rem; }
+.repair-form input { width: min(100%, 12rem); }
+.workbook details summary { cursor: pointer; color: var(--page-accent); padding-block: .55rem; }
+.source-list { margin-top: .8rem; font-size: .92rem; }
+.source-list ul { columns: 2; padding-left: 1.3rem; }
+.source-list li { break-inside: avoid; margin: .35rem 0; }
+.source-line a, .source-list a { text-underline-offset: .2em; }
+.poem-list, .poem-pending ul { list-style: none; padding: 0; margin: 0; }
+.poem-item {
+  display: flex;
+  justify-content: space-between;
+  gap: .75rem;
+  align-items: center;
+  width: 100%;
+  padding: .9rem 1.1rem;
+  border: 1px solid var(--edge);
+  border-radius: 4px;
+  background: var(--chosen);
+  color: var(--page-accent);
+  text-align: start;
+  cursor: pointer;
+}
+.poem-item:hover { background: color-mix(in srgb, var(--chosen), var(--page-accent) 8%); }
+.poem-item > span { font: 600 1.4rem/1.6 var(--serif); }
+.poem-item small { display: inline-flex; align-items: center; gap: .55rem; font-size: .9rem; font-weight: 600; }
+.poem-item small::after { content: ''; width: .42rem; height: .42rem; border: solid currentColor; border-width: 1.5px 1.5px 0 0; transform: rotate(45deg); }
+.poem-list li + li { margin-top: .5rem; }
+.poem-modes { display: flex; gap: 1rem; align-items: center; }
+.poem-modes .poem-item { flex: 1; min-width: 0; }
+.poem-study-modes { display: inline-flex; gap: 1em; flex-wrap: wrap; }
+.paper-study-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--page-accent);
+  font: 500 1rem/1.5 var(--serif);
+  text-decoration: underline;
+  text-decoration-color: var(--edge);
+  text-underline-offset: .3em;
+}
+.study-paper > .poem-study-modes { margin-top: 1rem; }
+.paper-study-link:hover { text-decoration-color: currentColor; }
+.poem-pending { margin-top: 1.1rem; }
+.poem-pending ul { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: .75rem 1.4rem; margin: .9rem 0 0 1rem; }
+.poem-pending li { font: 500 1rem/1.65 var(--serif); }
+.poem-pending li small { display: block; font: 400 .8rem/1.5 var(--sans); color: var(--page-muted); }
+.record-book + .record-book { border-top: 1px solid var(--page-line); }
+.record-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: .5rem 1rem;
+  padding-block: 1rem;
+  border-top: 1px solid var(--page-line);
+}
+.record-row > div > strong { font: 600 1.14rem/1.5 var(--serif); }
+.record-row > div > small { display: block; margin: .15rem 0 0; color: var(--page-muted); font: 400 .86rem/1.6 var(--sans); }
+.record-row time { font-variant-numeric: tabular-nums; }
+.record-row details, .record-row > span { font-size: .92rem; }
+.record-row details p { margin: .5rem 0; }
+.record-links { display: flex; flex-wrap: wrap; gap: .45rem 1rem; }
+.record-book .button-primary { margin-top: .65rem; }
+@media (max-width: 800px) {
+  .choice-row { gap: .5rem; padding-inline: .55rem; grid-template-columns: 1.5rem minmax(0,1fr) 1rem; }
+  .choice-words { font-size: 1.07rem; gap: .35rem; }
+  .shown-reading { font-size: .82em; }
+  .poem-pending ul { grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+@media (max-width: 620px) {
+  .poem-modes { flex-wrap: wrap; gap: 0; }
+  .poem-modes .poem-item { flex-basis: 100%; }
+  .poem-modes .poem-study-modes { padding-inline: 1rem; }
+  .folio-head { padding-bottom: 1rem; }
+  .folio-head h1 { font-size: 2rem; }
+  .folio-head > span { font-size: .82rem; }
+  .study-paper, .catalog-sheet, .record-book { padding-block: 1.5rem 2rem; }
+  .workbook h2, .workbook legend.question { font-size: 1.35rem; }
+  .choice-row { padding: .8rem .25rem; }
+  .choice-words, .word-chips { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .pick-row { gap: .3rem; grid-template-columns: 1.4rem minmax(0,1fr); }
+  .word-chips { gap: .4rem; font-size: 1rem; }
+  .word-chips label { padding: .2rem .38rem; gap: .35rem; }
+  .excerpt { font-size: 1.12rem; }
+  .study-paper .write-entry, .poem-comparison { grid-template-columns: 1fr; }
+  .poem-comparison { gap: .3rem; }
+  .poem-comparison dd + dt { margin-top: .65rem; }
+  .source-list ul { columns: 1; }
+  .poem-pending ul { gap: .6rem; margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .choice-row { transition: none; }
+}

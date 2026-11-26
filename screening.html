@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f7f1">
+  <title>逐字筛查 · 习页</title>
+  <link rel="icon" href="data:,">
+  <script src="./reading-theme.mjs"></script>
+  <link rel="stylesheet" href="./chinese.css">
+  <link rel="stylesheet" href="./reading-theme.css">
+  <link rel="stylesheet" href="./screening-demo.css">
+  <script type="module" src="./screening.mjs"></script>
+</head>
+<body>
+  <a class="skip-link" href="#screening">跳到筛查</a>
+  <header class="site-head"><div class="mast">
+    <a class="wordmark" href="./#desk"><span class="brand-book" aria-hidden="true"></span>习页</a>
+    <nav aria-label="主导航"><a href="./#desk">练习书桌</a><a href="./#records">学习记录</a></nav>
+  </div></header>
+  <main id="screening" class="screening" tabindex="-1">
+    <h1 id="title">逐字筛查</h1>
+    <div class="toolbar">
+      <nav class="modes" aria-label="筛查专项">
+        <a href="./screening.html?section=sound" data-mode="sound">字音筛查</a>
+        <a href="./screening.html?section=spelling" data-mode="spelling">字形筛查</a>
+      </nav>
+      <span id="count"></span>
+    </div>
+    <p id="notice" role="status"></p>
+    <a id="review" class="review-link" hidden></a>
+    <section id="question" aria-labelledby="word" hidden>
+      <div class="prompt">
+        <p id="instruction"></p>
+        <h2 id="word" tabindex="-1"></h2>
+        <p id="context"></p>
+      </div>
+      <label class="uncertainty"><input id="unsure" type="checkbox">拿不准</label>
+      <div id="answers" role="group" aria-labelledby="word instruction"></div>
+      <div class="controls">
+        <small id="source"></small>
+        <span id="feedback" role="status" aria-atomic="true"></span>
+        <a id="assist-this" hidden></a>
+        <button type="button" class="button-primary" id="next" disabled>下一字</button>
+      </div>
+    </section>
+    <section id="held" hidden>
+      <h2>上次筛过的字，今天可以复考了。</h2>
+      <button id="skip-feedback" type="button" class="button-secondary">继续筛查下一字</button>
+    </section>
+    <section id="summary" hidden aria-labelledby="result-title">
+      <h2 id="result-title" tabindex="-1">本专项已筛完</h2>
+      <p id="totals"></p>
+      <p id="assist-summary" hidden><a id="assist-all"></a></p>
+      <a href="./#records">查看学习记录</a>
+    </section>
+    <button id="retry" type="button" class="text-link" hidden>重新载入</button>
+    <noscript>请开启 JavaScript 后进行筛查。</noscript>
+  </main>
+</body>
+</html>

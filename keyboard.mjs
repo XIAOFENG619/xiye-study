@@ -1,0 +1,236 @@
+import { classFetch as fetch } from './class-api.mjs';
+import { splitPoemParts } from './poem-parts.mjs';
+import { compareRecitation } from './keyboard-compare.mjs';
+import { getKeyboardAttempt, saveKeyboardAttempt } from './keyboard-history.mjs';
+
+const $ = id => document.getElementById(id);
+const initial = new URL(location.href).searchParams;
+const draftPrefix = 'xiye.keyboard.draft.v1.';
+let poems = [];
+let poem;
+let parts = [];
+let part = 1;
+let attempt;
+let phase = 'loading';
+let saving = false;
+const notice = text => { $('notice').textContent = text; };
+const meaningful = answer => /[^\s\p{P}]/u.test(answer);
+const scope = (poemId, number) => new URLSearchParams({ poem: poemId, part: number }).toString();
+const draftKey = () => draftPrefix + scope(poem.id, part);
+
+function changePhase(next) {
+  phase = next;
+  for (const panel of ['reading', 'writing', 'feedback']) $(panel).hidden = panel !== next;
+  $('reading-text').textContent = '';
+  $('comparison').replaceChildren();
+  $('summary').textContent = '';
+  $('original-answer').textContent = $('original-reference').textContent = '';
+  $('originals').open = false;
+  $('answer').value = '';
+  $('retry-save').hidden = true;
+  notice('');
+}
+
+function setLinks(poemId, number, id = null) {
+  const params = new URLSearchParams(scope(poemId, number));
+  $('paper-link').href = './handwriting.html?' + params;
+  if (id) params.set('attempt', id);
+  history.replaceState(null, '', location.pathname + '?' + params);
+}
+
+function readDraft() {
+  try {
+    const draft = JSON.parse(sessionStorage.getItem(draftKey()));
+    if (draft?.id && typeof draft.answer === 'string' && typeof draft.reference === 'string' &&
+        draft.poemId === poem.id && draft.part === part && !getKeyboardAttempt(draft.id)) return draft;
+  } catch { /* The current page still accepts input without saved storage. */ }
+  return null;
+}
+
+function keepDraft() {
+  try { sessionStorage.setItem(draftKey(), JSON.stringify(attempt)); }
+  catch { notice('本页暂时无法保存草稿，请在离开前提交。'); }
+}
+
+function choosePoem(id, requestedPart) {
+  poem = poems.find(item => item.id === id) || poems[0];
+  parts = splitPoemParts(poem.text);
+  const number = requestedPart == null ? 1 : Number(requestedPart);
+  part = Number.isInteger(number) && number >= 0 && number <= parts.length ? number : 1;
+  $('poem').value = poem.id;
+  $('part').replaceChildren(new Option('全篇', '0'), ...parts.map((_, i) => new Option('第 ' + (i + 1) + ' 段', i + 1)));
+  $('part').value = String(part);
+  $('paper-link').href = './handwriting.html?' + scope(poem.id, part);
+}
+
+function openScope() {
+  attempt = readDraft();
+  setLinks(poem.id, part);
+  if (attempt) {
+    enterWriting();
+    return;
+  }
+  changePhase('reading');
+  $('reading-text').textContent = part ? parts[part - 1] : poem.text;
+}
+
+function updateSubmit() {
+  const hasAnswer = meaningful($('answer').value);
+  $('submit').disabled = saving || !hasAnswer;
+  $('blank').hidden = hasAnswer;
+  $('blank').disabled = saving;
+}
+
+function enterWriting() {
+  changePhase('writing');
+  $('answer').value = attempt.answer;
+  updateSubmit();
+  $('answer').focus();
+}
+
+function startAttempt() {
+  attempt = {
+    id: crypto.randomUUID(), poemId: poem.id, poemTitle: poem.title, part,
+    reference: part ? parts[part - 1] : poem.text, answer: '',
+  };
+  enterWriting();
+  keepDraft();
+}
+
+function markedChange(segment) {
+  const tag = document.createElement('span');
+  tag.dataset.change = segment.type;
+  tag.dataset.actual = segment.actual;
+  tag.dataset.expected = segment.expected;
+  const label = document.createElement('small');
+  label.textContent = {replace: '错', missing: '漏', extra: '多'}[segment.type];
+  tag.append(label);
+  if (segment.actual) {
+    const written = document.createElement('del');
+    written.textContent = segment.actual;
+    tag.append(written);
+  }
+  if (segment.type === 'replace') {
+    const arrow = document.createElement('span');
+    arrow.className = 'arrow';
+    arrow.textContent = '→';
+    tag.append(arrow);
+  }
+  if (segment.expected) {
+    const expected = document.createElement('ins');
+    expected.textContent = segment.expected;
+    tag.append(expected);
+  }
+  return tag;
+}
+
+function feedback(saved) {
+  changePhase('feedback');
+  const {answer, reference} = attempt;
+  const grade = compareRecitation(answer, reference);
+  const summary = $('summary');
+  for (const key of ['wrong','missing','extra']) summary.dataset[key] = String(grade[key]);
+  summary.textContent = grade.correct ? '用字全部正确。' :
+    [['wrong','写错'], ['missing','漏写'], ['extra','多写']].filter(([key])=>grade[key])
+      .map(([key, label]) => label + ' ' + grade[key] + ' 字').join(' · ');
+  const comparison = document.createDocumentFragment();
+  for (const seg of grade.segments) {
+    if (seg.type === 'equal' || seg.type === 'separator') comparison.append(seg.expected);
+    else comparison.append(markedChange(seg));
+  }
+  $('comparison').replaceChildren(comparison);
+  $('original-answer').textContent = answer || '（未填写）';
+  $('original-reference').textContent = reference;
+  $('feedback-title').textContent = '《' + attempt.poemTitle + '》' + (attempt.part ? '第 ' + attempt.part + ' 段' : '全篇') + ' · 默写核对';
+  $('again').disabled = !poem;
+  if (saved) setLinks(attempt.poemId, attempt.part, attempt.id);
+  $('feedback-title').focus();
+}
+
+async function submitAttempt() {
+  if (saving || !attempt || !['writing','feedback'].includes(phase)) return;
+  if (phase === 'writing') attempt.answer = $('answer').value;
+  saving = true;
+  $('poem').disabled = $('part').disabled = $('answer').disabled = $('retry-save').disabled = true;
+  updateSubmit();
+  try {
+    // A duplicated tab may inherit the draft id; keep the two distinct answers.
+    const previous = getKeyboardAttempt(attempt.id);
+    if (previous && previous.answer !== attempt.answer) {
+      attempt = { ...attempt, id: crypto.randomUUID() };
+      keepDraft();
+    }
+    await saveKeyboardAttempt(attempt);
+    try { sessionStorage.removeItem(draftKey()); } catch { /* History was saved. */ }
+    feedback(true);
+  } catch (error) {
+    feedback(false);
+    notice(error.message || '学习记录保存失败，可重试。');
+    $('retry-save').hidden = false;
+  } finally {
+    saving = false;
+    $('poem').disabled = $('part').disabled = !poems.length;
+    $('answer').disabled = $('retry-save').disabled = false;
+    updateSubmit();
+  }
+}
+
+async function load() {
+  $('retry').hidden = true;
+  let saved;
+  try { if (initial.has('attempt')) saved = getKeyboardAttempt(initial.get('attempt')); } catch { /* The catalog can still open. */ }
+  try {
+    const response = await fetch('/api/chinese/poems');
+    if (!response.ok) throw Error();
+    const data = await response.json();
+    if (!data.poems?.length) throw Error();
+    poems = data.poems;
+    $('poem').replaceChildren(...poems.map(item => new Option(
+      poems.some(other => other.id !== item.id && other.title === item.title) ? item.title + ' · ' + item.locator : item.title, item.id)));
+    const requested = saved?.poemId ?? initial.get('poem');
+    if (saved && !poems.some(item => item.id === requested)) {
+      $('setup').hidden = $('paper-link').hidden = true;
+      attempt = saved;
+      feedback(true);
+      return;
+    }
+    choosePoem(requested ?? (poems.find(item => item.title === '将进酒')?.id), saved?.part ?? initial.get('part'));
+    $('poem').disabled = $('part').disabled = false;
+    if (!saved) {
+      openScope();
+      if (initial.has('attempt')) notice('这个浏览器里没有这次学习记录，已打开篇目。');
+      return;
+    }
+  } catch {
+    if (!saved) {
+      notice('篇目载入失败，可以重新载入。');
+      $('retry').hidden = false;
+      return;
+    }
+    $('setup').hidden = $('paper-link').hidden = true;
+  }
+  attempt = saved;
+  feedback(true);
+}
+
+$('poem').addEventListener('change', () => { choosePoem($('poem').value, 1); openScope(); });
+$('part').addEventListener('change', () => { part = Number($('part').value); openScope(); });
+$('cover').addEventListener('click', startAttempt);
+$('answer').addEventListener('input', () => {
+  if (phase !== 'writing') return;
+  attempt.answer = $('answer').value;
+  keepDraft();
+  updateSubmit();
+});
+$('writing').addEventListener('submit', event => {
+  event.preventDefault();
+  if (meaningful($('answer').value)) void submitAttempt();
+});
+$('blank').addEventListener('click', () => { if (!meaningful($('answer').value)) void submitAttempt(); });
+$('retry-save').addEventListener('click', submitAttempt);
+$('retry').addEventListener('click', load);
+$('again').addEventListener('click', () => {
+  openScope();
+  if (phase === 'reading') $('cover').focus();
+});
+load();
