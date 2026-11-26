@@ -1,4 +1,5 @@
 export const studyAttemptPrefix = 'xiye.chinese.poemStudy.practice.v1.';
+export const studyDraftPrefix = 'xiye.chinese.poemStudy.draft.v1.';
 const evidencePrefix = 'xiye.chinese.poemStudy.evidence.v1.';
 
 function sectionKey(poemId, part) {

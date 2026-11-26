@@ -1,12 +1,14 @@
-import { classFetch as fetch } from './class-api.mjs';
-import { renderHome } from './chinese-home.mjs?v=study-1';
-import { isClassEdition } from './practice-edition.mjs';
-import { mountDeskWindow } from './desk-window.mjs';
-import { renderActive, renderModeMenu, renderPoemCatalog, renderRecords, escapeHtml } from './chinese-views.mjs?v=recall-2';
-import { dueMistakes, feedbackKeys, loadState, saveState, step } from './chinese-state.mjs';
-import { listPaperReviews, paperReviewPrefix } from './handwriting-history.mjs';
-import { listKeyboardAttempts, keyboardAttemptPrefix } from './keyboard-history.mjs';
-import { listStudyAttempts, studyAttemptPrefix } from './poem-study-state.mjs';
+import { classFetch as fetch } from './class-api.mjs?v=ink-2';
+import { renderHome } from './chinese-home.mjs?v=ink-2';
+import { isClassEdition } from './practice-edition.mjs?v=ink-2';
+import { mountDeskWindow } from './desk-window.mjs?v=ink-2';
+import { createDeskScroll, bindDeskPress } from './desk-scroll.mjs?v=ink-2';
+import { getDeskProgress, getVolumeResume } from './desk-progress.mjs?v=ink-2';
+import { renderActive, renderModeMenu, renderPoemCatalog, renderRecords, escapeHtml } from './chinese-views.mjs?v=ink-2';
+import { dueMistakes, feedbackKeys, getScreening, loadState, saveState, step } from './chinese-state.mjs?v=ink-2';
+import { listPaperReviews, paperReviewPrefix } from './handwriting-history.mjs?v=ink-2';
+import { listKeyboardAttempts, keyboardAttemptPrefix } from './keyboard-history.mjs?v=ink-2';
+import { listStudyAttempts, studyAttemptPrefix } from './poem-study-state.mjs?v=ink-2';
 
 const main = document.getElementById('study-main');
 const sectionNames = { poetry: '古诗练习', sound: '字音练习', spelling: '字形练习' };
@@ -17,6 +19,8 @@ let writes = Promise.resolve();
 let routeId = 0;
 let busy = false;
 let closeWindow = null;
+const scroll = createDeskScroll(main, releaseDesk);
+bindDeskPress(main);
 
 function notify(text) {
   let notice = main.querySelector('[data-notice]');
@@ -66,10 +70,37 @@ async function api(path, params = {}) {
 
 function page() { return location.hash.slice(1) || 'desk'; }
 
-function show(html) {
+function volumeOf(target) {
+  const section = target.endsWith('-modes') && target.slice(0, -6);
+  return Object.hasOwn(sectionNames, section) ? section : null;
+}
+
+function menuPosition(link) {
+  if (!link?.dataset.modeAction) return;
+  history.replaceState({ ...history.state, xiyeModeFocus:link.dataset.modeAction, xiyeModeY:window.scrollY }, '');
+}
+
+function restoreMenuFocus(navigated) {
+  const saved = history.state?.xiyeModeFocus;
+  const action = Array.from(main.querySelectorAll('[data-mode-action]')).find(el => el.dataset.modeAction === saved);
+  if (saved || navigated) {
+    window.scrollTo(0, history.state?.xiyeModeY ?? 0);
+    (action ?? main.querySelector('#scroll-title')).focus({preventScroll:true});
+  }
+}
+
+function releaseDesk() {
   closeWindow?.();
   closeWindow = null;
+}
+function mountDesk() {
+  closeWindow = mountDeskWindow(main.querySelector('.desk-spread'));
+}
+function show(html, ink = false) {
+  scroll.reset();
+  releaseDesk();
   main.innerHTML = html;
+  if (ink) main.firstElementChild?.classList.add('route-ink-enter');
 }
 
 function setNav(target) {
@@ -79,7 +110,7 @@ function setNav(target) {
   });
 }
 
-async function continueHere() {
+async function continueHere(ink = false) {
   const currentRoute = routeId;
   if (state.active?.phase === 'feedback' && !document.hidden) {
     const { id, section } = state.active;
@@ -87,9 +118,15 @@ async function continueHere() {
       ? step(current, { type: 'expose', section, keys: feedbackKeys(current.active) }) : current);
   }
   if (currentRoute !== routeId || !state.active) return;
+  const focus = page() === 'continue' && history.state?.xiyeAnswerFocus;
   history.replaceState(null, '', '#continue');
   setNav('desk');
-  show(renderActive(state));
+  show(renderActive(state), ink);
+  if (focus?.id === state.active.id && focus.phase === state.active.phase) {
+    const form = Array.from(main.querySelectorAll('form')).find(el =>
+      el.dataset.form === focus.form && el.dataset.key === focus.key);
+    form?.elements[focus.index]?.focus({preventScroll:true});
+  }
 }
 
 function soundKind(current) {
@@ -114,7 +151,7 @@ function unsentWork(active) {
 }
 
 // Fetch before replacing an unfinished question so that network errors preserve it.
-async function start(section, { title, previous, reviewKey, confirmedRevision } = {}) {
+async function start(section, { title, previous, reviewKey, confirmedRevision, ink = true } = {}) {
   const routeAtStart = routeId;
   const hashAtStart = location.hash;
   const activeId = state.active?.id;
@@ -139,7 +176,7 @@ async function start(section, { title, previous, reviewKey, confirmedRevision } 
     const finished = current.active ? step(current, { type: 'finish' }) : current;
     return step(finished, action);
   });
-  if (stillHere() && state.active) await continueHere();
+  if (stillHere() && state.active) await continueHere(ink);
 }
 
 function switchPanel(section, title, reviewKey, loss) {
@@ -151,7 +188,7 @@ function switchPanel(section, title, reviewKey, loss) {
   main.querySelector('h1').focus();
 }
 
-async function route() {
+async function route(navigated = false) {
   const id = ++routeId;
   await writes;
   if (id !== routeId) return;
@@ -162,35 +199,52 @@ async function route() {
   }
   setNav(target === 'records' ? 'records' : 'desk');
   try {
-    if (target === 'records') return show(renderRecords(state, listPaperReviews(), listKeyboardAttempts(), listStudyAttempts()));
-    const modeSection = target.endsWith('-modes') && target.slice(0, -6);
-    if (modeSection && Object.hasOwn(sectionNames, modeSection)) return show(renderModeMenu(modeSection));
+    const modeSection = volumeOf(target);
+    if (navigated && target !== 'desk' && !modeSection) window.scrollTo(0, 0);
+    if (target === 'records') return show(renderRecords(state, listPaperReviews(), listKeyboardAttempts(), listStudyAttempts()), navigated);
+    if (modeSection) {
+      const screened = modeSection === 'poetry' ? 0 : Object.keys(getScreening(state, modeSection).picks).length;
+      const markup = renderModeMenu(modeSection, getVolumeResume(state, modeSection), screened);
+      const sheet = main.querySelector('.volume-sheet');
+      if (navigated && main.querySelector('.desk-spread') && (!sheet || sheet.dataset.volume === modeSection)) {
+        return scroll.open(markup, history.state?.xiyeFromDeskY ?? history.state?.xiyePoetryDeskY);
+      }
+      show(markup, navigated);
+      restoreMenuFocus(navigated);
+      return;
+    }
     if (target.startsWith('review?')) {
       const query = new URLSearchParams(target.slice('review?'.length));
       const section = query.get('section'), sourceId = query.get('id');
       const key = sourceId ? state.mistakes.find(m => m.section === section && m.sourceId === sourceId)?.key : query.get('key');
       if (state.active?.kind === 'review' && state.active.phase === 'answer' &&
-          state.active.section === section && state.active.question.key === key) return await continueHere();
+          state.active.section === section && state.active.question.key === key) return await continueHere(navigated);
       if (!dueMistakes(state, section).some(row => row.key === key)) {
         location.replace('#records');
         return;
       }
-      return await start(section, { reviewKey: key });
+      return await start(section, { reviewKey: key, ink: navigated });
     }
-    if (target === 'continue' && state.active) return await continueHere();
+    if (target === 'continue' && state.active) return await continueHere(navigated);
     if (Object.hasOwn(sectionNames, target)) {
-      if (state.active?.section === target && state.active.phase !== 'feedback') return await continueHere();
+      if (state.active?.section === target && state.active.phase !== 'feedback') return await continueHere(navigated);
       if (target === 'poetry') {
         const { titles } = await api('catalog');
-        if (id === routeId) show(renderPoemCatalog(titles));
-      } else await start(target);
+        if (id === routeId) show(renderPoemCatalog(titles), navigated);
+      } else await start(target, { ink: navigated });
       return;
     }
-    show(renderHome(state, {
+    const home = renderHome(state, {
       pendingCount: state.mistakes.filter(m => m.status === 'pending').length,
       dueCount: dueMistakes(state).length,
-    }));
-    closeWindow = mountDeskWindow(main.querySelector('.desk-spread'));
+      progressBySection: getDeskProgress(state),
+    });
+    if (navigated && main.querySelector('.volume-sheet')) {
+      return scroll.close(home, mountDesk, history.state?.xiyeDeskY);
+    }
+    show(home, navigated);
+    mountDesk();
+    if (navigated) window.scrollTo(0, 0);
   } catch (error) {
     if (id !== routeId) return;
     show('<section class="paper"><div class="actions"><button class="button-primary" data-action="retry">再试一次</button><a class="back-link" href="#desk">回练习书桌</a></div></section>');
@@ -322,13 +376,45 @@ main.addEventListener('click', event => {
         break;
       case 'next': {
         const { section, question } = state.active;
-        return start(section, { title: question.title, previous: question.prompt });
+        return start(section, { title: question.title, previous: question.prompt, ink: false });
       }
     }
   });
 });
 
-window.addEventListener('hashchange', () => { route(); window.scrollTo(0, 0); });
+// Keep genuine history entries so Forward, a shared volume link and
+// Cmd-click keep their usual browser behavior. 合卷 consumes the pushed entry.
+document.addEventListener('click', event => {
+  if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+  const link = event.target.closest('a');
+  if (link?.matches('.subject-entry') && page() === 'desk') {
+    event.preventDefault();
+    const y = window.scrollY;
+    history.replaceState({ ...history.state, xiyeDeskY: y }, '');
+    history.pushState({ xiyeFromDeskY: y }, '', link.hash);
+    route(true);
+  } else if (link?.getAttribute('href') === '#desk' && volumeOf(page()) &&
+      typeof (history.state?.xiyeFromDeskY ?? history.state?.xiyePoetryDeskY) === 'number') {
+    event.preventDefault();
+    history.back();
+  } else if (volumeOf(page())) menuPosition(link);
+});
+main.addEventListener('focusin', event => {
+  const field = event.target;
+  if (volumeOf(page())) return menuPosition(field);
+  if (page() !== 'continue' || !state?.active || !field?.form?.dataset.form || !field.name) return;
+  history.replaceState({ ...history.state, xiyeAnswerFocus:{
+    id:state.active.id, phase:state.active.phase, form:field.form.dataset.form, key:field.form.dataset.key,
+    index:Array.from(field.form.elements).indexOf(field),
+  } }, '');
+});
+window.addEventListener('pageshow', event => {
+  if (event.persisted && volumeOf(page())) {
+    state = loadState();
+    route();
+  }
+});
+window.addEventListener('hashchange', () => route(true));
 document.addEventListener('visibilitychange', () => {
   if (document.hidden || !state) return;
   if (['desk', 'records'].includes(page()) || (page() === 'continue' && state.active?.phase === 'feedback')) route();

@@ -1,5 +1,5 @@
-import { classFetch as fetch } from './class-api.mjs';
-import { isClassEdition } from './practice-edition.mjs';
+import { classFetch as fetch } from './class-api.mjs?v=ink-2';
+import { isClassEdition } from './practice-edition.mjs?v=ink-2';
 
 const el = id => document.getElementById(id);
 const form = el('search-form');
@@ -49,7 +49,8 @@ function renderHit(hit) {
     details.append(summary, excerpt);
     box.append(details);
   } else box.append(excerpt);
-  box.append(source);
+  const footer = document.createElement('footer');
+  footer.append(source);
   const sourceUrl = hit.sourceUrl || (!isClassEdition && hit.imageUrl);
   if (sourceUrl) {
     const link = document.createElement('a');
@@ -58,8 +59,9 @@ function renderHit(hit) {
     link.href = sourceUrl;
     link.target = '_blank';
     link.rel = 'noopener';
-    box.append(link);
+    footer.append(link);
   }
+  box.append(footer);
   return box;
 }
 

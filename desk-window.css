@@ -8,32 +8,41 @@
   width: 100%;
   aspect-ratio: 9 / 10;
   overflow: hidden;
-  border-radius: 6px;
-  background: color-mix(in srgb, #e9ddbf, #cbb58d var(--reading-dusk));
-  box-shadow:
-    0 1px 2px color-mix(in srgb, rgb(28 46 44 / .06), rgb(34 23 12 / .14) var(--reading-dusk)),
-    0 8px 22px color-mix(in srgb, rgb(28 46 44 / .065), rgb(34 23 12 / .16) var(--reading-dusk));
-  transition: box-shadow 800ms ease-in-out, background-color 800ms ease-in-out;
+  touch-action: pan-y pinch-zoom;
+  user-select: none;
+  -webkit-user-select: none;
 }
-/* 极淡宣纸内细框（贴合绢画平装质感） */
-.desk-plate::after {
-  content: '';
-  position: absolute;
-  inset: 10px;
-  z-index: 4;
-  border-radius: 3px;
-  border: 1px solid color-mix(in srgb, rgb(255 252 242 / .22), rgb(246 226 186 / .14) var(--reading-dusk));
-  pointer-events: none;
-}
+.desk-grade-defs { position: absolute; pointer-events: none; }
 .desk-plane, .desk-pictures, .landscape-slot, .desk-mist, .desk-mist div, .desk-ink, .desk-verse, .desk-hotspots, .desk-canvas {
   position: absolute;
   inset: 0;
 }
 .desk-plane { overflow: hidden; }
-.desk-pictures { isolation: isolate; }
+/* The blended images meet the same paper as the page. Only the image layer
+   is feathered: seals, hit targets and the focus ring retain crisp edges. */
+.base-plane {
+  background-color: var(--paper);
+  --paper-edge-x: linear-gradient(90deg, transparent 0%, #000 11%, #000 90%, transparent 100%);
+  --paper-edge-y: linear-gradient(180deg, transparent 0%, #000 8%, #000 90%, transparent 100%);
+  -webkit-mask-image: var(--paper-edge-x), var(--paper-edge-y);
+  -webkit-mask-composite: source-in;
+  mask-image: var(--paper-edge-x), var(--paper-edge-y);
+  mask-composite: intersect;
+}
+.desk-pictures { mix-blend-mode: multiply; }
 .landscape-slot { opacity: 0; overflow: hidden; }
 .landscape-slot.resting { opacity: 1; }
-.landscape-slot img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 35%; }
+.landscape-slot img {
+  display: block;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: var(--picture-position);
+  filter: var(--grade) brightness(1) saturate(1);
+  transition: filter 800ms ease-in-out;
+}
+:root[data-reading-theme="dusk"] .landscape-slot img {
+  filter: var(--grade) brightness(var(--night-light)) saturate(var(--night-chroma));
+}
 .landscape-slot.arriving {
   z-index: 1;
   animation: turn-sheet var(--fade-time) var(--turn-ease) both;
@@ -59,21 +68,6 @@
   opacity: calc(1 - var(--reading-dusk) * .35);
 }
 
-/* 灯下暮读：由右上微暖向四角渐润的琥珀滤镜 */
-.base-plane::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(circle at 80% 14%, rgb(214 148 74 / .18), transparent 46%),
-    linear-gradient(180deg, rgb(146 92 38 / .24) 0%, rgb(118 70 28 / .32) 100%);
-  mix-blend-mode: multiply;
-  opacity: 0;
-  transition: opacity 800ms ease-in-out;
-}
-:root[data-reading-theme="dusk"] .base-plane::after { opacity: 1; }
-
 /* 顶层：轻盈留白题跋与小巧朱砂印 */
 .desk-verse, .desk-hotspots, .desk-canvas { pointer-events: none; }
 .desk-canvas { width: 100%; height: 100%; }
@@ -91,7 +85,7 @@
   column-gap: .28em;
   align-items: flex-start;
   color: color-mix(in srgb, rgb(44 53 49 / .76), rgb(60 45 31 / .8) var(--reading-dusk));
-  font-family: "Kaiti SC", KaiTi, "Songti SC", STKaiti, var(--serif);
+  font-family: var(--serif);
   font-weight: 500;
   line-height: 1.06;
   letter-spacing: .2em;
@@ -163,9 +157,24 @@ button[data-hotspot="sun"]::before {
   transform: scale(.96);
   transition: opacity 420ms var(--turn-ease), transform 420ms var(--turn-ease);
 }
-button[data-hotspot="sun"]:is(:hover,:focus-visible)::before {
+button[data-hotspot="sun"]:focus-visible::before {
   opacity: 1;
   animation: sun-warmth 3.6s ease-in-out infinite alternate;
+}
+@media (hover: hover) and (pointer: fine) {
+  button[data-hotspot="sun"]:hover::before {
+    opacity: 1;
+    animation: sun-warmth 3.6s ease-in-out infinite alternate;
+  }
+}
+@media (any-pointer: coarse) {
+  button[data-hotspot="sun"]::after {
+    content: "";
+    position: absolute;
+    left: 50%; top: 0;
+    width: max(100%, 44px); height: max(100%, 44px);
+    transform: translateX(-50%);
+  }
 }
 @keyframes sun-warmth {
   from { opacity: .5; transform: scale(.97); }
@@ -191,54 +200,12 @@ button[data-hotspot="sun"]:focus-visible { outline-offset: 2px; }
   font: 11px/1.5 var(--sans);
 }
 
-/* 左侧菜单联动态：向右无硬边淡出底晕 + 居中书签细杠 + 3px 轻推 */
-.subject-entry { position: relative; isolation: isolate; }
-.subject-entry > div { transition: transform 320ms var(--turn-ease); }
-.subject-entry::before {
-  content: '';
-  position: absolute;
-  z-index: -1;
-  inset: 2px -12px;
-  border-radius: 6px;
-  background: linear-gradient(
-    90deg,
-    var(--wash) 0%,
-    color-mix(in srgb, var(--wash) 62%, transparent) 66%,
-    transparent 100%
-  );
-  opacity: 0;
-  transition: opacity 280ms ease-out;
-}
-.subject-entry::after {
-  content: '';
-  position: absolute;
-  left: -12px;
-  top: 26%;
-  bottom: 26%;
-  width: 2px;
-  border-radius: 2px;
-  background: var(--green);
-  opacity: 0;
-  transform: scaleY(.4);
-  transition: opacity 300ms var(--turn-ease), transform 300ms var(--turn-ease);
-}
-.subject-entry .entry-arrow { border-color: var(--rule); }
-.subject-entry:is([data-viewing],:focus-visible)::before { opacity: 1; }
-.subject-entry:is([data-viewing],:focus-visible) > div { transform: translateX(3px); }
-.subject-entry[data-viewing]::after { opacity: .72; transform: scaleY(1); }
-.subject-entry[data-viewing] .entry-arrow { color: var(--on-accent); background: var(--green); border-color: var(--green); }
-
 @media (prefers-reduced-motion: reduce) {
   .desk-plate *,
   .desk-plate ::before,
-  .desk-plate ::after,
-  .desk-plate::after,
-  .subject-entry > div,
-  .subject-entry::before,
-  .subject-entry::after {
+  .desk-plate ::after {
     animation: none !important;
     transition: none !important;
   }
-  .subject-entry > div { transform: none; }
   .landscape-slot.arriving { opacity: 1; }
 }

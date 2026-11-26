@@ -1,15 +1,14 @@
-import { classFetch as fetch } from './class-api.mjs';
-import { splitPoemParts } from './poem-parts.mjs';
-import { letters, paperClauses } from './handwriting-review.mjs';
-import { compareRecitation, comparisonFragment, differenceSummary } from './keyboard-compare.mjs?v=recall-2';
-import { keyboardStudyResult } from './poem-study-evidence.mjs';
-import { getStudyScene } from './poem-study-content.mjs';
-import { findOralPositions } from './poem-study-locate.mjs';
-import { readStudyEvidence, writeStudyEvidence, saveStudyAttempt } from './poem-study-state.mjs?v=recall-2';
+import { classFetch as fetch } from './class-api.mjs?v=ink-2';
+import { splitPoemParts } from './poem-parts.mjs?v=ink-2';
+import { letters, paperClauses } from './handwriting-review.mjs?v=ink-2';
+import { compareRecitation, comparisonFragment, differenceSummary } from './keyboard-compare.mjs?v=ink-2';
+import { keyboardStudyResult } from './poem-study-evidence.mjs?v=ink-2';
+import { getStudyScene } from './poem-study-content.mjs?v=ink-2';
+import { findOralPositions } from './poem-study-locate.mjs?v=ink-2';
+import { readStudyEvidence, writeStudyEvidence, saveStudyAttempt, studyDraftPrefix } from './poem-study-state.mjs?v=ink-2';
 
 const $ = id => document.getElementById(id);
 const clean = text => letters(text).join('');
-const draftPrefix = 'xiye.chinese.poemStudy.draft.v1.';
 let poems = [], poem, parts = [], part = 1, clauses = [];
 let state;
 let composingCue = false;
@@ -17,7 +16,7 @@ let cueCommittedAt = -Infinity;
 
 const passage = () => parts[part - 1];
 const scope = () => new URLSearchParams({ poem: poem.id, part });
-const draftKey = () => draftPrefix + scope();
+const draftKey = () => studyDraftPrefix + scope();
 const writingLink = file => {
   const query = scope();
   query.set('study', '1');
@@ -29,7 +28,7 @@ function freshState() {
   return { reference: passage(), stage: 'reading', evidence: null, task: null, seen: [], repaired: [] };
 }
 function saveDraft() {
-  try { sessionStorage.setItem(draftKey(), JSON.stringify(state)); }
+  try { sessionStorage.setItem(draftKey(), JSON.stringify({ ...state, poemTitle: poem.title, updatedAt: Date.now() })); }
   catch { $('notice').textContent = '当前浏览器无法暂存这道题，刷新后需要重新进入。'; }
 }
 function readDraft() {
@@ -200,6 +199,7 @@ function renderPractice() {
   $('clue').hidden = !task?.hintOpen;
   if (task?.result) {
     const { correct, usedHint } = task.result;
+    $('feedback').dataset.result = correct ? 'correct' : clean(task.answer) ? 'wrong' : 'revealed';
     $('mine-label').textContent = '我写的';
     $('mine').textContent = task.answer.trim() || '未填写';
     if (correct) {

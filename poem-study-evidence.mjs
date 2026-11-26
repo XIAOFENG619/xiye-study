@@ -1,5 +1,5 @@
-import { diffPaperLine, letters, paperClauses, unlocatedPaperClauses } from './handwriting-review.mjs';
-import { isGap, isPending } from './handwriting-rows.mjs';
+import { diffPaperLine, letters, paperClauses, unlocatedPaperClauses } from './handwriting-review.mjs?v=ink-2';
+import { isGap, isPending } from './handwriting-rows.mjs?v=ink-2';
 
 function clauseMap(passage) {
   const clauses = paperClauses(passage);

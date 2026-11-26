@@ -2,24 +2,24 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f7f7f1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f6f2e9">
   <title>逐字筛查 · 习页</title>
   <link rel="icon" href="data:,">
-  <script src="./reading-theme.mjs"></script>
-  <link rel="stylesheet" href="./chinese.css">
-  <link rel="stylesheet" href="./reading-theme.css">
-  <link rel="stylesheet" href="./screening-demo.css">
-  <script type="module" src="./screening.mjs"></script>
+  <script src="./reading-theme.mjs?v=ink-2"></script>
+  <link rel="stylesheet" href="./chinese.css?v=ink-2">
+  <link rel="stylesheet" href="./reading-theme.css?v=ink-2">
+  <link rel="stylesheet" href="./screening-demo.css?v=ink-2">
+  <script type="module" src="./screening.mjs?v=ink-2"></script>
 </head>
 <body>
   <a class="skip-link" href="#screening">跳到筛查</a>
   <header class="site-head"><div class="mast">
     <a class="wordmark" href="./#desk"><span class="brand-book" aria-hidden="true"></span>习页</a>
-    <nav aria-label="主导航"><a href="./#desk">练习书桌</a><a href="./#records">学习记录</a></nav>
+    <nav aria-label="主导航"><a href="./#desk" aria-current="location">练习书桌</a><a href="./#records">学习记录</a><a href="./rag.html">资料库</a></nav>
   </div></header>
-  <main id="screening" class="screening" tabindex="-1">
-    <h1 id="title">逐字筛查</h1>
+  <main id="screening" class="inner-folio screening" tabindex="-1">
+    <header class="folio-heading"><h1 id="title">逐字筛查</h1></header>
     <div class="toolbar">
       <nav class="modes" aria-label="筛查专项">
         <a href="./screening.html?section=sound" data-mode="sound">字音筛查</a>

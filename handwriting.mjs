@@ -1,11 +1,11 @@
-import { classFetch as fetch } from './class-api.mjs';
-import { diffPaperLine, paperClauses } from './handwriting-review.mjs';
-import { buildPaperRows, syncMissingRows, paperDecisions, isActive, isGap, isPending, pendingCount } from './handwriting-rows.mjs';
-import { getPaperReview, savePaperReview } from './handwriting-history.mjs';
-import { splitPoemParts } from './poem-parts.mjs';
-import { isClassEdition } from './practice-edition.mjs';
-import { paperStudyResult } from './poem-study-evidence.mjs';
-import { readStudyEvidence, writeStudyEvidence } from './poem-study-state.mjs';
+import { classFetch as fetch } from './class-api.mjs?v=ink-2';
+import { diffPaperLine, paperClauses } from './handwriting-review.mjs?v=ink-2';
+import { buildPaperRows, syncMissingRows, paperDecisions, isActive, isGap, isPending, pendingCount } from './handwriting-rows.mjs?v=ink-2';
+import { getPaperReview, savePaperReview } from './handwriting-history.mjs?v=ink-2';
+import { splitPoemParts } from './poem-parts.mjs?v=ink-2';
+import { isClassEdition } from './practice-edition.mjs?v=ink-2';
+import { paperStudyResult } from './poem-study-evidence.mjs?v=ink-2';
+import { readStudyEvidence, writeStudyEvidence } from './poem-study-state.mjs?v=ink-2';
 
 const $ = id => document.getElementById(id);
 const esc = text => String(text ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[c]);
@@ -208,8 +208,9 @@ function gapCard(row) {
     btn('correct','纸上已写全','button-secondary'), btn('edit','填写实际文字'),
     btn('missing','确认整句漏写'), btn('later','暂不确定'), btn('ignore','排除本句'),
   ] : [btn('reopen','重新核对')];
+  const verdict = row.state !== 'checked' ? '' : plain(row.actual) === plain(row.reference) ? 'correct' : 'wrong';
   const actual = row.state === 'checked' ? `<dt>纸上原字</dt><dd>${esc(row.actual) || '整句漏写'}</dd>` : '';
-  return `<article class="review-line" data-index="${row.lineIndex}" data-clause="${row.clauseIndex}">
+  return `<article class="review-line" data-index="${row.lineIndex}" data-clause="${row.clauseIndex}" data-verdict="${verdict}">
     <header><h3>所选段落第 ${row.clauseIndex+1} 句</h3><span class="line-state">${labels[row.state]}</span></header>
     <div class="line-evidence"><div>${btn('photo','对照整张原图')}</div><dl class="comparison"><dt>原句</dt><dd>${esc(row.reference)}</dd>${actual}</dl></div>
     <div class="line-actions">${actions.join('')}</div><div class="editor-slot"></div></article>`;
@@ -220,13 +221,14 @@ function lineCard(row,number) {
   const stateLabels={other:'未配到原句',ignored:'已排除',checked:'已确认',agreed:'识别一致',later:'留待核对',open:row.ambiguous?'请确认原句':'待核对'};
   if (row.faint && !row.ambiguous) stateLabels.open = '请核对笔迹';
   const confirmed = row.state === 'checked' ? diffPaperLine(row.actual,row.reference) : [];
+  const verdict = row.state !== 'checked' ? '' : confirmed.length ? 'wrong' : 'correct';
   if (confirmed.length) stateLabels.checked = `已确认 ${confirmed.length} 处错漏`;
   const evidence = row.box ? `<figure><figcaption>${local?'疑点附近笔迹':'本行笔迹'}</figcaption>${canvasHtml(row,local)}
     ${local ? `<details><summary>看整行</summary>${canvasHtml(row,false)}</details>` : ''}</figure>` : '<p class="line-state">手动补录，可查看整张原图。</p>';
   const readings = `<dl class="comparison">${row.lineIndex>=0 ? `<dt>识别</dt><dd>${highlighted(row.text,row.issues.map(i=>i.actualIndex))}</dd>` : ''}
     ${row.alternate!=null && row.alternate!==row.text ? `<dt>另一个读法</dt><dd>${esc(row.alternate)}</dd>` : ''}
     ${row.reference ? `<dt>原句</dt><dd>${highlighted(row.reference,row.issues.map(i=>i.referenceIndex))}</dd>` : ''}
-    ${row.state==='checked' || row.lineIndex<0 ? `<dt>纸上原字</dt><dd>${highlighted(row.actual,confirmed.map(i=>i.actualIndex))||'整行漏写'}</dd>` : ''}</dl>`;
+    ${row.state==='checked' || row.lineIndex<0 ? `<dt>纸上原字</dt><dd class="confirmed">${highlighted(row.actual,confirmed.map(i=>i.actualIndex))||'整行漏写'}</dd>` : ''}</dl>`;
   let quick = '';
   if (isPending(row) && row.reference && !row.ambiguous) {
     quick = btn('correct','纸上与原句相同','button-secondary');
@@ -240,7 +242,7 @@ function lineCard(row,number) {
     }
   }
   const editLabel=row.ambiguous?'选择对应原句':isActive(row)?'按纸面核对':'纳入核对';
-  return `<article class="review-line" data-index="${row.lineIndex}"><header><h3>${row.lineIndex<0?'补录行':number?'默写第 '+number+' 行':'其他笔迹'}</h3><span class="line-state">${stateLabels[row.state]}</span></header>
+  return `<article class="review-line" data-index="${row.lineIndex}" data-verdict="${verdict}"><header><h3>${row.lineIndex<0?'补录行':number?'默写第 '+number+' 行':'其他笔迹'}</h3><span class="line-state">${stateLabels[row.state]}</span></header>
     <div class="line-evidence">${evidence}${readings}</div>
     <div class="line-actions">${quick}
       ${btn('edit',editLabel)}${row.state==='open'?btn('later','暂不确定'):''}

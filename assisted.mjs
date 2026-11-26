@@ -1,6 +1,6 @@
-import { applyScreeningAction, assistedQueue, dueMistakes, getScreening, loadState } from './chinese-state.mjs';
-import { assistedQuestion } from './assisted-questions.mjs';
-import { playWord, stopWord } from './assisted-audio.mjs';
+import { applyScreeningAction, assistedQueue, dueMistakes, getScreening, loadState } from './chinese-state.mjs?v=ink-2';
+import { assistedQuestion } from './assisted-questions.mjs?v=ink-2';
+import { playWord, stopWord } from './assisted-audio.mjs?v=ink-2';
 
 const $ = id => document.getElementById(id);
 const params = new URL(location.href).searchParams;
@@ -130,6 +130,7 @@ function paint(state) {
   $('submit').hidden = Boolean(result);
   $('feedback').hidden = !result;
   if (result) {
+    $('feedback').dataset.result = result.correct ? 'correct' : 'wrong';
     clearDraft();
     if (!q.choices) $('answer').value = result.value;
     $('verdict').textContent = result.correct ? '这次答对了。' : '正确答案是「' + q.expected + '」。';

@@ -1,0 +1,110 @@
+/* The origin and destination remain on the same sheet of paper while moving. */
+#study-main { --scroll-ease: cubic-bezier(.22, 1, .36, 1); }
+#study-main:has(> .volume-sheet) { margin-top: clamp(30px, 4.4vw, 70px); }
+#study-main[data-scroll-phase] {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  isolation: isolate;
+  overflow-anchor: none;
+}
+#study-main[data-scroll-phase] > .desk-spread,
+#study-main[data-scroll-phase] > .volume-sheet { grid-area: 1 / 1; width: 100%; }
+.volume-sheet {
+  position: relative;
+  width: 100%;
+  max-width: 1120px;
+  min-height: 58vh;
+  min-height: 58svh;
+  padding: clamp(18px, 4vw, 36px);
+  background-color: var(--sheet);
+  background-image: var(--paper-grain);
+  background-blend-mode: multiply;
+  isolation: isolate;
+}
+@media (max-width: 700px) {
+  #study-main:has(> .volume-sheet) { margin-top: clamp(18px, 4.5vw, 28px); }
+  .volume-sheet { max-width: 510px; }
+}
+.volume-sheet[data-volume="poetry"] { --volume-art: url('./assets/river-print.jpg'); }
+.volume-sheet[data-volume="sound"] { --volume-art: url('./assets/desk-pronunciation.jpg'); }
+.volume-sheet[data-volume="spelling"] { --volume-art: url('./assets/desk-character.jpg'); }
+.volume-sheet::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0 0 auto;
+  height: 8rem;
+  pointer-events: none;
+  opacity: .085;
+  background: var(--volume-art) center 35% / cover;
+  mix-blend-mode: multiply;
+  -webkit-mask-image: linear-gradient(#000, transparent);
+  mask-image: linear-gradient(#000, transparent);
+}
+.scroll-heading {
+  display: grid;
+  align-items: center;
+  grid-template-columns: 1fr auto 1fr;
+  column-gap: .5rem;
+  padding-bottom: .85rem;
+  border-bottom: 1px solid var(--rule);
+}
+.scroll-heading, .scroll-options { max-width: 46rem; margin-inline: auto; }
+.scroll-heading h1 { margin: 0; font: 500 1.35rem/1.45 var(--serif); letter-spacing: .12em; }
+.scroll-heading h1:focus { outline: 0; }
+.scroll-close, .scroll-bookmark {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  text-decoration-color: var(--edge);
+  text-underline-offset: .3em;
+}
+.scroll-close { justify-self: start; padding-inline: .25rem; font-family: var(--serif); }
+.scroll-volume { justify-self: end; font: 500 .8rem/1.4 var(--serif); letter-spacing: .15em; color: var(--muted); }
+.scroll-options { padding-block: .65rem 1rem; }
+.scroll-bookmark { flex-wrap: wrap; gap: .8rem; padding-block: .35rem; }
+.scroll-bookmark span { font-size: .88rem; color: var(--muted); }
+.volume-sheet .scroll-options ul { margin: .55rem 0; }
+.volume-sheet .scroll-options li { border: 0; }
+.volume-sheet .scroll-options li a {
+  display: grid; grid-template-columns: minmax(0, 1fr); row-gap: .35rem;
+  padding: 1.3rem .25rem;
+  background: linear-gradient(90deg, var(--rule), transparent) bottom / 100% 1px no-repeat;
+}
+.volume-sheet .scroll-options li a::after { content: none; }
+.volume-sheet .scroll-options strong { font-weight: 500; }
+@media (hover: none) {
+  .volume-sheet .scroll-options li a:hover { color: var(--ink); background-color: transparent; }
+}
+
+#study-main[data-scroll-phase] .volume-sheet {
+  z-index: 1;
+  top: var(--scroll-sheet-offset, 0px);
+  opacity: 0;
+  clip-path: inset(0 0 100% 0);
+  transition: clip-path 510ms var(--scroll-ease), opacity 330ms var(--scroll-ease);
+}
+#study-main[data-scroll-unfurled] .volume-sheet { clip-path: inset(0); opacity: 1; }
+#study-main[data-scroll-phase] .scroll-heading,
+#study-main[data-scroll-phase] .scroll-options {
+  opacity: 0;
+  transform: translateY(5px);
+  transition: opacity 290ms var(--scroll-ease), transform 300ms var(--scroll-ease);
+}
+#study-main[data-scroll-ink] .scroll-heading,
+#study-main[data-scroll-ink] .scroll-options { opacity: 1; transform: none; }
+#study-main[data-scroll-phase] :is(.desk-plate,.desk-index,.desk-contents,.subject-entry) {
+  transition: transform 390ms var(--scroll-ease), opacity 370ms var(--scroll-ease);
+}
+#study-main[data-scroll-phase="opening"] .subject-entry:not(.is-pressed) { opacity: .32; }
+#study-main[data-scroll-unfurled] .desk-plate { opacity: .14; transform: translateY(-8px); }
+#study-main[data-scroll-ink] .desk-plate { opacity: 0; }
+#study-main[data-scroll-unfurled] .desk-index,
+#study-main[data-scroll-unfurled] .desk-contents { opacity: 0; }
+#study-main[data-scroll-phase="closing"] .volume-sheet { transition-duration: 390ms, 330ms; }
+.route-ink-enter { animation: page-ink-in 180ms var(--scroll-ease); }
+@media (prefers-reduced-motion: reduce) {
+  #study-main[data-scroll-phase] * { transition: none !important; }
+  .route-ink-enter { animation: none; }
+}

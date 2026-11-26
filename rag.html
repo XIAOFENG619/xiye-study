@@ -2,15 +2,15 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f7f7f1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f6f2e9">
   <title>资料库 · 习页</title>
   <link rel="icon" href="data:,">
-  <script src="./reading-theme.mjs"></script>
-  <link rel="stylesheet" href="./chinese.css">
-  <link rel="stylesheet" href="./rag.css">
-  <link rel="stylesheet" href="./reading-theme.css">
-  <script type="module" src="./rag.mjs?v=ready-1"></script>
+  <script src="./reading-theme.mjs?v=ink-2"></script>
+  <link rel="stylesheet" href="./chinese.css?v=ink-2">
+  <link rel="stylesheet" href="./rag.css?v=ink-2">
+  <link rel="stylesheet" href="./reading-theme.css?v=ink-2">
+  <script type="module" src="./rag.mjs?v=ink-2"></script>
 </head>
 <body>
   <a class="skip-link" href="#archive">跳到主要内容</a>
@@ -22,8 +22,8 @@
       <a href="./rag.html" aria-current="page">资料库</a>
     </nav>
   </div></header>
-  <main id="archive" class="archive site-width" tabindex="-1">
-    <h1>语文资料库</h1>
+  <main id="archive" class="archive inner-folio" tabindex="-1">
+    <header class="folio-heading"><h1>语文资料库</h1></header>
     <form id="search-form" role="search" aria-label="检索语文资料">
       <div class="search-row">
         <label for="query" class="a11y-only">词语、篇名或原文</label>
@@ -35,9 +35,14 @@
         <label>用途 <select name="mode" disabled><option value="lookup">查阅资料</option><option value="exercise">出题取材</option></select></label>
       </div>
     </form>
-    <div class="quick-search" id="quick-search"><span>试查</span>
-      <button type="button" disabled>角色</button><button type="button" disabled>完璧归赵</button><button type="button" disabled>将进酒</button>
-    </div>
+    <section class="quick-search" id="quick-search" aria-labelledby="lookup-title">
+      <h2 id="lookup-title">试查</h2>
+      <ul>
+        <li><span>古诗</span><button type="button" disabled>将进酒</button></li>
+        <li><span>字音</span><button type="button" disabled>角色</button></li>
+        <li><span>字形</span><button type="button" disabled>完璧归赵</button></li>
+      </ul>
+    </section>
     <p id="message" class="library-status" role="status"></p>
     <section id="results" aria-labelledby="result-title" hidden>
       <div class="result-head"><h2 id="result-title"></h2><span id="hit-count" role="status"></span></div>

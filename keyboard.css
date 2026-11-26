@@ -1,28 +1,37 @@
-.recitation { max-width: 52rem; width: calc(100% - 40px); margin: clamp(32px, 6vw, 72px) auto 80px; }
-.recitation-head, .recitation-actions, .recitation-setup { display: flex; align-items: baseline; flex-wrap: wrap; gap: .75rem 1.6rem; }
-.recitation-head { justify-content: space-between; }
-.recitation-head h1 { margin: 0; font: 600 clamp(2.15rem, 4.1vw, 3.25rem)/1.3 var(--serif); }
+.recitation { width: min(46rem, calc(100% - 2.5rem)); margin: clamp(1.75rem, 5vw, 4.5rem) auto 5rem; }
+.recitation-actions, .recitation-setup { display: flex; align-items: baseline; flex-wrap: wrap; gap: .75rem 1.6rem; }
 .recitation a:not(.button-primary), .recitation summary { color: var(--green); text-underline-offset: .24em; }
-.recitation-setup { margin: 1.6rem 0 1.8rem; align-items: end; }
+.recitation-setup { margin: 0 0 clamp(1.15rem, 3vw, 1.8rem); align-items: end; }
 .recitation-setup label { display: grid; gap: .4rem; max-width: 100%; color: var(--muted); font-size: .9rem; }
-.recitation-setup select { min-width: 9em; color: var(--ink); }
+.recitation-setup select { min-width: 7em; color: var(--ink); font-size: 1rem; }
+.recitation-setup .text-link { align-self: center; margin-left: auto; font-size: .9rem; }
 #notice { color: var(--muted); }
 #notice:empty { display: none; }
-.recitation-page { border-top: 1px solid var(--rule); padding-block: 1.75rem; }
+.recitation-page { border-top: 1px solid transparent; border-image: var(--ink-divider) 1; padding-block: 1.75rem; }
 .recitation h2, .section-heading { display: block; font: 600 1.45rem/1.4 var(--serif); margin: 0 0 .9rem; }
 .recitation .poem-text, .recitation dd, #answer { font: 500 clamp(1.12rem,2.3vw,1.38rem)/1.95 var(--serif); white-space: pre-wrap; overflow-wrap: anywhere; }
 .recitation .poem-text { margin: 0 0 1.6rem; }
-#answer { width: 100%; display: block; min-height: 8rem; padding: .8rem 1rem; color: var(--ink); }
+#reading-text {
+  padding: .95rem clamp(1rem, 3vw, 1.7rem); border-inline-start: 2px solid var(--edge);
+  background: var(--paper-grain), linear-gradient(90deg, var(--sheet), transparent);
+}
+#answer {
+  width: 100%; display: block; min-height: 10rem; padding: .8rem 1rem; color: var(--ink); line-height: 2;
+  background-color: var(--sheet);
+  background-image: repeating-linear-gradient(to bottom, transparent 0 calc(2em - 1px), var(--rule) calc(2em - 1px) 2em);
+  background-position: left .8rem; background-origin: padding-box; border-radius: 2px;
+}
 #answer-hint { color: var(--muted); font-size: .88rem; margin-top: .55rem; }
 .recitation-actions { align-items: center; margin-top: 1.55rem; }
-#summary { color: var(--green); margin: -.1rem 0 1rem; }
+#summary[data-wrong="0"][data-missing="0"][data-extra="0"] { color: var(--success-ink); }
+#summary { color: var(--error-ink); margin: -.1rem 0 1rem; }
 #comparison { padding-block: .35rem; line-height: 2.25; }
-#comparison [data-change] { display: inline-block; white-space: nowrap; line-height: 1.65; margin-inline: .1em; padding-inline: .2em; background-color: var(--wash); }
+#comparison [data-change] { display: inline-block; white-space: nowrap; line-height: 1.65; margin-inline: .1em; padding-inline: .2em; background-color: var(--sheet); }
 #comparison [data-change] small { margin-right: .25em; font: 600 .68em/1.4 var(--sans); color: var(--muted); }
-#comparison del { color: #904434; text-decoration-thickness: .08em; }
-#comparison ins { color: var(--green); text-decoration: underline; text-underline-offset: .16em; }
+#comparison del { color: var(--error-ink); background: var(--error-wash); text-decoration-thickness: .08em; }
+#comparison ins { color: var(--success-ink); background: var(--success-wash); text-decoration: underline; text-underline-offset: .16em; }
 #comparison .arrow { font: .72em var(--sans); margin-inline: .18em; color: var(--muted); }
-.recitation details { border-top: 1px solid var(--rule); padding-top: .8rem; }
+.recitation details { border-top: 1px solid transparent; border-image: var(--ink-divider) 1; padding-top: .8rem; }
 .recitation summary { cursor: pointer; width: fit-content; padding-block: .3rem; }
 .recitation dl { margin-bottom: 0; }
 .recitation dt { color: var(--muted); font-size: .9rem; }
@@ -30,5 +39,6 @@
 @media (max-width: 480px) {
   .recitation { width: calc(100% - 32px); }
   .recitation-setup { display: grid; grid-template-columns: minmax(0, 1fr) minmax(6rem, .6fr); gap: .75rem; }
-  .recitation-setup select { min-width: 0; }
+  .recitation-setup select { width: 100%; min-width: 0; }
+  .recitation-setup .text-link { grid-column: 1 / -1; justify-self: start; margin: 0; }
 }

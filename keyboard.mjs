@@ -1,14 +1,13 @@
-import { classFetch as fetch } from './class-api.mjs';
-import { splitPoemParts } from './poem-parts.mjs';
-import { compareRecitation, comparisonFragment, differenceSummary } from './keyboard-compare.mjs?v=recall-2';
-import { getKeyboardAttempt, saveKeyboardAttempt } from './keyboard-history.mjs';
-import { keyboardStudyResult } from './poem-study-evidence.mjs';
-import { readStudyEvidence, writeStudyEvidence } from './poem-study-state.mjs';
+import { classFetch as fetch } from './class-api.mjs?v=ink-2';
+import { splitPoemParts } from './poem-parts.mjs?v=ink-2';
+import { compareRecitation, comparisonFragment, differenceSummary } from './keyboard-compare.mjs?v=ink-2';
+import { getKeyboardAttempt, saveKeyboardAttempt, keyboardDraftPrefix } from './keyboard-history.mjs?v=ink-2';
+import { keyboardStudyResult } from './poem-study-evidence.mjs?v=ink-2';
+import { readStudyEvidence, writeStudyEvidence } from './poem-study-state.mjs?v=ink-2';
 
 const $ = id => document.getElementById(id);
 const initial = new URL(location.href).searchParams;
 let study = initial.get('study') === '1';
-const draftPrefix = 'xiye.keyboard.draft.v1.';
 let poems = [];
 let poem;
 let parts = [];
@@ -19,7 +18,7 @@ let saving = false;
 const notice = text => { $('notice').textContent = text; };
 const meaningful = answer => /[^\s\p{P}]/u.test(answer);
 const scope = (poemId, number) => new URLSearchParams({ poem: poemId, part: number }).toString();
-const draftKey = () => draftPrefix + scope(poem.id, part);
+const draftKey = () => keyboardDraftPrefix + scope(poem.id, part);
 
 function changePhase(next) {
   phase = next;
@@ -54,7 +53,7 @@ function readDraft() {
 }
 
 function keepDraft() {
-  try { sessionStorage.setItem(draftKey(), JSON.stringify(attempt)); }
+  try { sessionStorage.setItem(draftKey(), JSON.stringify({ ...attempt, study, updatedAt: Date.now() })); }
   catch { notice('本页暂时无法保存草稿，请在离开前提交。'); }
 }
 

@@ -1,5 +1,5 @@
-import { classFetch as fetch } from './class-api.mjs';
-import { applyScreeningAction, assistedQueue, dueMistakes, getScreening, loadState } from './chinese-state.mjs';
+import { classFetch as fetch } from './class-api.mjs?v=ink-2';
+import { applyScreeningAction, assistedQueue, dueMistakes, getScreening, loadState } from './chinese-state.mjs?v=ink-2';
 
 const $ = id => document.getElementById(id);
 const section = new URL(location.href).searchParams.get('section') === 'spelling' ? 'spelling' : 'sound';

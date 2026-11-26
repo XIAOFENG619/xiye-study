@@ -1,5 +1,5 @@
-import { assistedQueue, dueMistakes, getScreening } from './chinese-state.mjs';
-import { isClassEdition } from './practice-edition.mjs';
+import { assistedQueue, dueMistakes, getScreening } from './chinese-state.mjs?v=ink-2';
+import { isClassEdition } from './practice-edition.mjs?v=ink-2';
 
 export function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>"']/gu, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -28,17 +28,26 @@ function pageHead(title, note = '') {
   return `<header class="folio-head"><h1>${esc(title)}</h1>${note ? `<span>${esc(note)}</span>` : ''}</header>`;
 }
 
-export function renderModeMenu(section) {
+export function renderModeMenu(section, resume = null, screened = 0) {
   const poetry = section === 'poetry';
+  const volume = {poetry:'卷一', sound:'卷二', spelling:'卷三'}[section];
   const modes = [
     ['直接做题', '#' + section, { poetry: '选一篇，根据情境默写原句', sound: '成组辨音，兼练短文辨音', spelling: '在四组词语中辨别正误' }[section]],
     poetry ? ['学习古诗', './poem-study.html', '选一段读背，再按刚才的表现巩固']
-      : ['先摸底', './screening.html?section=' + section, '逐字四选一，找出错选和拿不准的字'],
+      : ['先摸底', './screening.html?section=' + section, screened
+        ? `已筛 ${screened} 字 · 查看筛查进度` : '逐字四选一，找出错选和拿不准的字'],
   ];
-  const links = modes.map(([label, href, detail], i) => `<li><a href="${href}" aria-labelledby="mode-${i}" aria-describedby="mode-note-${i}">
+  const links = modes.map(([label, href, detail], i) => `<li><a href="${href}" data-mode-action="${i ? 'learn' : 'direct'}" aria-labelledby="mode-${i}" aria-describedby="mode-note-${i}">
     <strong id="mode-${i}">${label}</strong><span id="mode-note-${i}">${detail}</span></a></li>`).join('');
-  return `<div class="workbook mode-menu">${pageHead(titles[section])}<ul aria-label="选择练习方式">${links}</ul>
-    <a class="back-link" href="#desk">回练习书桌</a></div>`;
+  const bookmark = resume ? `<a class="scroll-bookmark" data-mode-action="resume" href="${esc(resume.href)}">续前卷<span>${esc(resume.label)}</span></a>` : '';
+  return `<section class="workbook mode-menu volume-sheet${poetry ? ' poetry-sheet' : ''}" data-volume="${section}" aria-labelledby="scroll-title">
+    <header class="scroll-heading">
+      <a class="scroll-close" data-close-scroll data-mode-action="close" href="#desk" aria-label="合卷，返回练习书桌">合卷</a>
+      <h1 id="scroll-title" tabindex="-1">${titles[section]}</h1>
+      <span class="scroll-volume">${volume}</span>
+    </header>
+    <div class="scroll-options">${bookmark}<ul aria-label="选择练习方式">${links}</ul></div>
+  </section>`;
 }
 
 function markedWord(word, target) {
@@ -75,11 +84,11 @@ function choiceView(a) {
     const cells = row.map(item => {
       if (!sound) return `<span>${esc(item.shownWord)}</span>`;
       if (q.kind === 'passage') return `<span>${esc(item.shownPinyin)}</span>`;
-      return `<span><span class="term">${markedWord(item.shownWord, item.target)}</span><small class="shown-reading">（${esc(item.shownPinyin)}）</small></span>`;
+      return `<span><span class="term">${markedWord(item.shownWord, item.target)}</span> <small class="shown-reading">${esc(item.shownPinyin)}</small></span>`;
     }).join('');
     return `<label class="choice-row"><input type="radio" required name="index" value="${i}" ${String(a.draft.index) === String(i) ? 'checked' : ''}><span class="choice-letter">${letter(i)}</span><span class="choice-words">${cells}</span></label>`;
   }).join('');
-  return `<form data-form="choice"><fieldset><legend class="question">${esc(q.prompt)}（　）</legend>
+  return `<form data-form="choice"><fieldset><legend class="question">${esc(q.prompt)}？</legend>
     ${q.passage ? `<blockquote class="excerpt">${passageText(q.passage, q.rows[0])}</blockquote>` : ''}
     <div class="choices">${rows}</div></fieldset>
     <div class="actions">${submit('提交选择')}${button('done','结束本题','text-link')}</div></form>`;
@@ -126,15 +135,15 @@ function reviewAnswer(a) {
 function checkResult(a, check) {
   const result = a.corrections.filter(c => c.key === check.key).at(-1);
   const correctForm = check.correct || result?.correct ? '' : `<form class="repair-form" data-form="correct" data-key="${esc(check.key)}"><label>当场订正 ${field('answer','')}</label><button class="button-secondary" type="submit">核对订正</button></form>`;
-  return `<div class="check-line"><strong>${esc(check.word)}</strong><p>你写的「${esc(check.raw)}」，${check.correct ? '独立作答正确。' : `正确答案是「${esc(check.expected)}」。`}</p>
-    ${result ? `<p class="muted">${result.correct ? '当场已订正，保留跨日复考。' : '本次订正仍有误，可再写一次。'}</p>` : ''}${correctForm}</div>`;
+  return `<div class="check-line" data-result="${check.correct ? 'right' : 'wrong'}"><strong>${esc(check.word)}</strong><p>你写的「<span class="original-answer">${esc(check.raw)}</span>」，${check.correct ? '独立作答正确。' : `正确答案是「<span class="reference-answer">${esc(check.expected)}</span>」。`}</p>
+    ${result ? `<p class="repair-result" data-result="${result.correct ? 'right' : 'wrong'}">${result.correct ? '当场已订正，保留跨日复考。' : '本次订正仍有误，可再写一次。'}</p>` : ''}${correctForm}</div>`;
 }
 
 function feedback(a) {
   const q = a.question;
   let body = '';
   if (a.kind === 'poetry') {
-    body = `<h2>${a.correct ? '原句一致' : '用字有差异'}</h2><dl class="poem-comparison"><dt>你的默写</dt><dd>${esc(a.answer)}</dd><dt>对照原句</dt><dd>${esc(Array.isArray(q.expected) ? q.expected.join('，') : q.expected)}</dd></dl><p class="source-line">${source(q)}</p>`;
+    body = `<h2>${a.correct ? '原句一致' : '用字有差异'}</h2><dl class="poem-comparison"><dt>你的默写</dt><dd>${esc(a.answer)}</dd><dt>对照原句</dt><dd class="reference-answer">${esc(Array.isArray(q.expected) ? q.expected.join('，') : q.expected)}</dd></dl><p class="source-line">${source(q)}</p>`;
   } else if (a.kind === 'review') {
     body = `<h2>${a.correct ? '独立复考通过' : '三天后再考一次'}</h2>${a.checks.map(c => checkResult(a,c)).join('')}
       <p class="source-line">${source(q)}</p>`;
@@ -143,7 +152,8 @@ function feedback(a) {
     const rows = q.rows.map((row,i) => {
       const wrong = row.filter(w => sound ? w.shownPinyin !== w.pinyin : w.shownWord !== w.word);
       const changed = wrong.map(item => sound ? `${markedWord(item.word,item.target)}（${esc(item.shownPinyin)} → ${esc(item.pinyin)}）` : `${esc(item.shownWord)} → ${esc(item.word)}`).join('、');
-      return `<div class="answer-line"><span class="answer-letter">${letter(i)}</span><span>${changed || '全组正确'}</span></div>`;
+      const verdict = i === q.correctIndex ? '正确选项' : i === a.choiceIndex ? '你的选择' : '';
+      return `<div class="answer-line"><span class="answer-letter">${letter(i)}</span><span>${changed || '全组正确'}</span>${verdict ? `<small class="option-verdict" data-result="${i === q.correctIndex ? 'right' : 'wrong'}">${verdict}</small>` : ''}</div>`;
     }).join('');
     const sources = [...new Map(q.rows.flat().map(item => [item.sourceId,item])).values()]
       .map(item => `<li>${esc(item.word)}　${source(item)}</li>`).join('');
@@ -167,7 +177,7 @@ export function renderActive(state) {
   else body = choiceView(a);
   let note = a.kind === 'poetry' && a.question.referenceOnly ? '样题试练，不计分' : formats[a.kind];
   if (a.section !== 'poetry' && a.phase === 'feedback') note = '作答反馈';
-  return `<div class="workbook">${pageHead(titles[a.section], note)}<section class="study-paper">${body}</section></div>`;
+  return `<div class="workbook inner-folio">${pageHead(titles[a.section], note)}<section class="study-paper">${body}</section></div>`;
 }
 
 export function renderPoemCatalog(titlesList) {
@@ -177,7 +187,7 @@ export function renderPoemCatalog(titlesList) {
     ${item.hasText ? learningModes(item.title) : ''}</li>`).join('');
   const missingTextOnly = pending.every(item => !item.hasText);
   const pendingRows = pending.map(item => `<li>${esc(item.title)}${item.hasText ? learningModes(item.title) : ''}${missingTextOnly ? '' : `<small>${item.hasText ? '待配题' : '待补课文'}</small>`}</li>`).join('');
-  return `<div class="workbook">${pageHead('古诗练习', `共 ${titlesList.length} 篇`)}
+  return `<div class="workbook inner-folio">${pageHead('古诗练习', `共 ${titlesList.length} 篇`)}
     <section class="catalog-sheet"><h2>选择篇目</h2>${readyRows ? `<ul class="poem-list">${readyRows}</ul>` : '<p>补入课文并配好情境题后，就可以开始默写。</p>'}
     ${pending.length ? `<details class="poem-pending"><summary>${missingTextOnly ? '待补课文' : '准备中的篇目'}（${pending.length} 篇）</summary><ul>${pendingRows}</ul></details>` : ''}</section></div>`;
 }
@@ -227,7 +237,7 @@ export function renderRecords(state, paperReviews = [], keyboardAttempts = [], s
   }).join('');
   const history = state.history.map(a => {
     const result = a.kind === 'review' ? (a.correct ? '独立复考通过' : '独立复考有误') : a.kind === 'poetry' ? (a.correct ? '原句一致' : '用字有差异') : `首答 ${letter(a.choiceIndex)} · ${a.correct ? '选择正确' : '选择有误'}`;
-    return `<div class="record-row"><div><strong>${esc(titles[a.section])}</strong><small>${esc(a.kind === 'poetry' ? a.question.title : formats[a.kind])} · ${esc(recordDate(a.submittedAt))}</small></div><span>${result}</span></div>`;
+    return `<div class="record-row"><div><strong>${esc(titles[a.section])}</strong><small>${esc(a.kind === 'poetry' ? a.question.title : formats[a.kind])} · ${esc(recordDate(a.submittedAt))}</small></div><span class="record-verdict" data-result="${a.correct ? 'right' : 'wrong'}">${result}</span></div>`;
   }).join('');
   const paperRows = paperReviews.map(row => {
     const errors = row.confirmedMistakes.map(({actual, expected}) => {
@@ -259,9 +269,9 @@ export function renderRecords(state, paperReviews = [], keyboardAttempts = [], s
       <p>参考原句　${esc(a.expected)}</p></details></div>`;
   }).join('');
   if (!mistakes && !history && !paperRows && !keyboardRows && !screeningRows && !studyRows) {
-    return `<div class="workbook">${pageHead('学习记录')}<section class="record-book"><h2>还没有练习记录</h2><a class="button-primary" href="#desk">去做第一题</a></section></div>`;
+    return `<div class="workbook inner-folio">${pageHead('学习记录')}<section class="record-book record-empty"><h2>还没有练习记录</h2><a class="button-primary" href="#desk">去做第一题</a></section></div>`;
   }
-  return `<div class="workbook">${pageHead('学习记录')}<section class="record-book"><h2>错词复考</h2>${mistakes || '<p class="worksheet-note">暂时没有待考的词。</p>'}</section>
+  return `<div class="workbook inner-folio">${pageHead('学习记录')}<section class="record-book"><h2>错词复考</h2>${mistakes || '<p class="worksheet-note">暂时没有待考的词。</p>'}</section>
     ${screeningRows ? `<section class="record-book"><h2>逐字筛查</h2>${screeningRows}</section>` : ''}
     ${keyboardRows ? `<section class="record-book"><h2>键盘默写</h2>${keyboardRows}</section>` : ''}
     ${paperRows ? `<section class="record-book"><h2>纸上默写</h2>${paperRows}</section>` : ''}

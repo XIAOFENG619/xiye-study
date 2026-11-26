@@ -1,14 +1,35 @@
-import { SCENES, DEBUG_HOTSPOTS } from './desk-scenes.mjs';
-import { createDeskParticles } from './desk-particles.mjs';
+import { SCENES, DEBUG_HOTSPOTS } from './desk-scenes.mjs?v=ink-2';
+import { createDeskParticles } from './desk-particles.mjs?v=ink-2';
 
 const [initial] = SCENES;
 const fadeMs = 700;
 const guideLabels = { sun: '红日', blossoms: '花树', water: '江面', sky: '留白' };
 
+// Lift the yellow in the lightest areas of each scan. The luminance mask leaves
+// pine needles, mineral greens and the vermilion sun close to their original ink.
+function paperGrade({ id, paper }) {
+  const channels = ['R', 'G', 'B'];
+  const nearWhite = [253, 249, 239];
+  const transfer = channels.map((channel, i) =>
+    `<feFunc${channel} type="linear" slope="${(nearWhite[i] / paper.sky[i]).toFixed(3)}"/>`).join('');
+  return `<filter id="desk-tone-${id}" color-interpolation-filters="sRGB">
+    <feComponentTransfer in="SourceGraphic" result="lifted">${transfer}</feComponentTransfer>
+    <feColorMatrix in="SourceGraphic" type="matrix" result="light-paper"
+      values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0   1.4 2.4 .2 0 -1.8"/>
+    <feComposite in="lifted" in2="light-paper" operator="in"/>
+    <feMerge><feMergeNode in="SourceGraphic"/><feMergeNode/></feMerge>
+  </filter>`;
+}
+
+function gradeStyle(scene) {
+  return `--grade:url(#desk-tone-${scene.id});--night-light:${scene.paper.nightBrightness};--night-chroma:${scene.paper.nightChroma};--picture-position:${scene.objectPosition || 'center'}`;
+}
+
 export function renderDeskWindow() {
   return `<div class="desk-plate" data-desk-window data-scene="${initial.id}" style="--fade-time:${fadeMs}ms">
+    <svg class="desk-grade-defs" width="0" height="0" aria-hidden="true" focusable="false"><defs>${SCENES.map(paperGrade).join('')}</defs></svg>
     <div class="desk-plane base-plane"><div class="desk-pictures">
-      <div class="landscape-slot resting"><img src="${initial.image}" alt="${initial.description}" fetchpriority="high"></div>
+      <div class="landscape-slot resting"><img style="${gradeStyle(initial)}" src="${initial.image}" alt="${initial.description}" fetchpriority="high"></div>
       <div class="landscape-slot"></div>
     </div></div>
     <div class="desk-plane mist-plane" aria-hidden="true"><div class="desk-mist"><div></div></div></div>
@@ -38,6 +59,7 @@ export function mountDeskWindow(spread) {
   const canvas = frame.querySelector('canvas');
   const particles = createDeskParticles(canvas);
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  const hoverInput = matchMedia('(hover: hover) and (pointer: fine)');
   const events = new AbortController();
   const listen = (el, type, fn) => el.addEventListener(type, fn, { signal: events.signal });
   const images = new Map([[initial.id, Promise.resolve(slots[0].firstElementChild)]]);
@@ -45,12 +67,14 @@ export function mountDeskWindow(spread) {
   let wanted = initial, pending = null;
   let hoverTimer, returnTimer, fadeTimer;
   let lastPetal = null, disposed = false;
+  let swipeStart = null, touchPinned = false, suppressTap = false;
 
   frame.toggleAttribute('data-debug', DEBUG_HOTSPOTS);
   function imageFor(scene) {
     if (!images.has(scene.id)) {
       const img = new Image();
       img.alt = scene.description;
+      img.style.cssText = gradeStyle(scene);
       img.src = scene.image;
       images.set(scene.id, img.decode().then(() => img));
     }
@@ -134,32 +158,74 @@ export function mountDeskWindow(spread) {
 
   function request(id, wait) {
     clearTimeout(hoverTimer);
-    hoverTimer = setTimeout(() => {
+    const show = () => {
       wanted = SCENES.find(scene => scene.id === id) || initial;
       prepare();
-    }, wait);
+    };
+    if (wait) hoverTimer = setTimeout(show, wait);
+    else show();
   }
   function enterLink(event) {
     if (event.pointerType === 'touch') return;
     const link = event.target.closest('[data-scene-id]') || event.target.closest('.subject-row')?.querySelector('.subject-entry');
     if (!link || link.contains(event.relatedTarget)) return;
+    touchPinned = false;
     clearTimeout(returnTimer);
     request(link.dataset.sceneId, 120);
   }
   function armReturn() {
     clearTimeout(returnTimer);
+    if (touchPinned) return;
     returnTimer = setTimeout(() => {
-      if ([frame, menu].some(el => el.matches(':hover') || el.querySelector(':focus-visible'))) return;
+      if ([frame, menu].some(el => (hoverInput.matches && el.matches(':hover')) || el.querySelector(':focus-visible'))) return;
       request(initial.id, 0);
     }, 1500);
   }
   listen(menu, 'pointerover', enterLink);
-  listen(menu, 'focusin', enterLink);
-  listen(menu, 'pointerleave', () => { clearTimeout(hoverTimer); armReturn(); });
+  listen(menu, 'focusin', event => {
+    if (hoverInput.matches || event.target.matches(':focus-visible')) enterLink(event);
+  });
+  listen(menu, 'pointerdown', event => {
+    if (event.pointerType !== 'touch' || !event.isPrimary) return;
+    const link = event.target.closest('.subject-entry[data-scene-id]');
+    if (link) {
+      touchPinned = false;
+      clearTimeout(returnTimer);
+      request(link.dataset.sceneId, 0);
+    }
+  });
+  listen(menu, 'pointercancel', event => {
+    if (event.pointerType === 'touch') request(initial.id, 0);
+  });
+  listen(menu, 'pointerleave', event => {
+    clearTimeout(hoverTimer);
+    if (event.pointerType !== 'touch') armReturn();
+  });
   listen(menu, 'focusout', armReturn);
   listen(frame, 'pointerenter', () => clearTimeout(returnTimer));
   listen(frame, 'focusin', () => clearTimeout(returnTimer));
   listen(frame, 'focusout', armReturn);
+
+  // Touch browsing commits on release. Vertical pans and pinch zoom remain native.
+  listen(frame, 'pointerdown', event => {
+    if (event.pointerType !== 'touch') return;
+    clearTimeout(returnTimer);
+    suppressTap = !event.isPrimary;
+    swipeStart = event.isPrimary ? { x: event.clientX, y: event.clientY } : null;
+  });
+  listen(frame, 'pointercancel', () => { swipeStart = null; });
+  listen(frame, 'pointerup', event => {
+    if (event.pointerType !== 'touch' || !swipeStart) return;
+    const dx = event.clientX - swipeStart.x;
+    const dy = event.clientY - swipeStart.y;
+    swipeStart = null;
+    suppressTap = Math.hypot(dx, dy) > 12;
+    if (Math.abs(dx) < 36 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+    touchPinned = true;
+    const step = dx < 0 ? 1 : -1;
+    const next = (SCENES.indexOf(wanted) + step + SCENES.length) % SCENES.length;
+    request(SCENES[next].id, 0);
+  });
 
   function canvasPoint(event) {
     const rect = canvas.getBoundingClientRect();
@@ -174,10 +240,16 @@ export function mountDeskWindow(spread) {
     particles.petals(...canvasPoint(event));
     lastPetal = { x, y, time: now };
   });
-  listen(frame, 'pointerleave', () => { lastPetal = null; armReturn(); });
+  listen(frame, 'pointerleave', event => {
+    lastPetal = null;
+    if (event.pointerType !== 'touch') armReturn();
+  });
   listen(zones, 'click', event => {
+    const touch = event.pointerType === 'touch' || (!event.pointerType && !hoverInput.matches && event.detail > 0);
+    if (touch && suppressTap) return;
     const key = event.target.closest('[data-hotspot]')?.dataset.hotspot;
     if (key === 'sun') window.readingTheme.toggle();
+    if (key === 'blossoms' && touch && !reduced.matches) particles.petals(...canvasPoint(event));
     if ((key === 'water' || key === 'sky') && !reduced.matches) particles.ripple(...canvasPoint(event));
   });
   listen(document, 'readingthemechange', syncSun);

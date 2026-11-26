@@ -1,4 +1,4 @@
-import { letters } from './handwriting-review.mjs';
+import { letters } from './handwriting-review.mjs?v=ink-2';
 
 // Return the clause where each remembered fragment ends, including a match at the end of the passage.
 export function findOralPositions(clauses, cue) {

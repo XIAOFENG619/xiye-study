@@ -1,4 +1,4 @@
-import { alignCharacters, letters } from './handwriting-review.mjs';
+import { alignCharacters, letters } from './handwriting-review.mjs?v=ink-2';
 
 // Keep the source's original spaces and punctuation at their character boundaries.
 function referenceLayout(text) {

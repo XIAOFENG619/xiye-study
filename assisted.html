@@ -2,25 +2,25 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f7f7f1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f6f2e9">
   <title>辅助学习 · 习页</title>
   <link rel="icon" href="data:,">
-  <script src="./reading-theme.mjs"></script>
-  <link rel="stylesheet" href="./chinese.css">
-  <link rel="stylesheet" href="./reading-theme.css">
-  <link rel="stylesheet" href="./screening-demo.css">
-  <link rel="stylesheet" href="./assisted.css">
-  <script type="module" src="./assisted.mjs"></script>
+  <script src="./reading-theme.mjs?v=ink-2"></script>
+  <link rel="stylesheet" href="./chinese.css?v=ink-2">
+  <link rel="stylesheet" href="./reading-theme.css?v=ink-2">
+  <link rel="stylesheet" href="./screening-demo.css?v=ink-2">
+  <link rel="stylesheet" href="./assisted.css?v=ink-2">
+  <script type="module" src="./assisted.mjs?v=ink-2"></script>
 </head>
 <body>
   <a class="skip-link" href="#assisted">跳到辅助题</a>
   <header class="site-head"><div class="mast">
     <a class="wordmark" href="./#desk"><span class="brand-book" aria-hidden="true"></span>习页</a>
-    <nav aria-label="主导航"><a id="screen-link" href="./screening.html">返回筛查</a><a href="./#records">学习记录</a></nav>
+    <nav aria-label="主导航"><a href="./#desk" aria-current="location">练习书桌</a><a href="./#records">学习记录</a><a href="./rag.html">资料库</a></nav>
   </div></header>
-  <main id="assisted" class="screening" tabindex="-1">
-    <h1 id="title">辅助学习</h1>
+  <main id="assisted" class="inner-folio screening" tabindex="-1">
+    <header class="folio-heading"><a class="folio-back" id="screen-link" href="./screening.html">返回筛查</a><h1 id="title">辅助学习</h1></header>
     <p id="notice" role="status"></p>
     <section id="task" aria-labelledby="prompt" hidden>
       <p id="step"></p>

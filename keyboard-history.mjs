@@ -1,6 +1,7 @@
-import { compareRecitation } from './keyboard-compare.mjs';
+import { compareRecitation } from './keyboard-compare.mjs?v=ink-2';
 
 export const keyboardAttemptPrefix = 'xiye.chinese.keyboard.v1.';
+export const keyboardDraftPrefix = 'xiye.keyboard.draft.v1.';
 
 export function getKeyboardAttempt(id, storage = localStorage) {
   const value = storage.getItem(keyboardAttemptPrefix + id);

@@ -1,4 +1,4 @@
-import { diffPaperLine, matchPaperLines, unlocatedPaperClauses, faintPaperLine } from './handwriting-review.mjs';
+import { diffPaperLine, matchPaperLines, unlocatedPaperClauses, faintPaperLine } from './handwriting-review.mjs?v=ink-2';
 
 export const isGap = row => row.kind === 'gap';
 export const isActive = row => !['other', 'ignored'].includes(row.state);

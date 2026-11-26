@@ -2,24 +2,24 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f7f7f1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f6f2e9">
   <title>学习古诗 · 习页</title>
   <link rel="icon" href="data:,">
-  <script src="./reading-theme.mjs"></script>
-  <link rel="stylesheet" href="./chinese.css">
-  <link rel="stylesheet" href="./reading-theme.css">
-  <link rel="stylesheet" href="./poem-study.css?v=recall-2">
-  <script type="module" src="./poem-study.mjs?v=recall-2"></script>
+  <script src="./reading-theme.mjs?v=ink-2"></script>
+  <link rel="stylesheet" href="./chinese.css?v=ink-2">
+  <link rel="stylesheet" href="./reading-theme.css?v=ink-2">
+  <link rel="stylesheet" href="./poem-study.css?v=ink-2">
+  <script type="module" src="./poem-study.mjs?v=ink-2"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">跳到学习古诗</a>
   <header class="site-head"><div class="mast">
     <a class="wordmark" href="./#desk"><span class="brand-book" aria-hidden="true"></span>习页</a>
-    <nav aria-label="主导航"><a href="./#poetry-modes">古诗练习</a><a href="./#records">学习记录</a></nav>
+    <nav aria-label="主导航"><a href="./#desk" aria-current="location">练习书桌</a><a href="./#records">学习记录</a><a href="./rag.html">资料库</a></nav>
   </div></header>
-  <main id="main" class="poem-study" tabindex="-1">
-    <h1>学习古诗</h1>
+  <main id="main" class="inner-folio poem-study" tabindex="-1">
+    <header class="folio-heading"><a class="folio-back" href="./#poetry-modes">古诗练习</a><h1>学习古诗</h1></header>
     <div class="study-scope">
       <label>篇目<select id="poem" disabled></select></label>
       <label>段落<select id="part" disabled></select></label>
