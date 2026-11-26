@@ -113,7 +113,7 @@ export function bindDeskPress(main) {
   main.addEventListener('pointerdown', event => {
     clear();
     cancelledRow = null;
-    const row = event.target.closest('.subject-entry');
+    const row = event.target.closest('.subject-entry, .scroll-options [data-mode-action]');
     if (!row || !event.isPrimary || event.button !== 0) return;
     press = { row, id: event.pointerId, x: event.clientX, y: event.clientY };
     row.classList.add('is-pressed');

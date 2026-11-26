@@ -1,6 +1,6 @@
-import { applyScreeningAction, assistedQueue, dueMistakes, getScreening, loadState } from './chinese-state.mjs?v=ink-2';
-import { assistedQuestion } from './assisted-questions.mjs?v=ink-2';
-import { playWord, stopWord } from './assisted-audio.mjs?v=ink-2';
+import { applyScreeningAction, assistedQueue, dueMistakes, getScreening, loadState } from './chinese-state.mjs?v=ink-3';
+import { assistedQuestion } from './assisted-questions.mjs?v=ink-3';
+import { playWord, stopWord } from './assisted-audio.mjs?v=ink-3';
 
 const $ = id => document.getElementById(id);
 const params = new URL(location.href).searchParams;

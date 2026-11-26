@@ -1,5 +1,5 @@
-import { assistedQueue, dueMistakes, getScreening } from './chinese-state.mjs?v=ink-2';
-import { isClassEdition } from './practice-edition.mjs?v=ink-2';
+import { assistedQueue, dueMistakes, getScreening } from './chinese-state.mjs?v=ink-3';
+import { isClassEdition } from './practice-edition.mjs?v=ink-3';
 
 export function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>"']/gu, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);

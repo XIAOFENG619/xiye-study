@@ -1,7 +1,8 @@
 :root {
   color-scheme: light;
-  --serif: "Xiye Desk Song", "Songti SC", "STSong", "Noto Serif CJK SC", "Source Han Serif SC", "STIX Two Text", SimSun, serif;
-  --sans: "PingFang SC", -apple-system, BlinkMacSystemFont, "Microsoft YaHei", "Inter", sans-serif;
+  --sans: "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", system-ui, sans-serif;
+  --reading-serif: "Songti SC", "STSong", "Noto Serif CJK SC", "Source Han Serif SC", "Noto Serif SC", SimSun, var(--sans);
+  --serif: var(--reading-serif);
   --ink-hairline: linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--ink) 16%, transparent) 14% 86%, transparent 100%);
   --ink-divider: linear-gradient(90deg, color-mix(in srgb, var(--ink) 8%, transparent), color-mix(in srgb, var(--ink) 11%, transparent) 75%, transparent);
   color: var(--ink);
@@ -12,6 +13,12 @@
   font: 16px/1.6 var(--sans);
   -webkit-font-smoothing: antialiased;
   accent-color: var(--green);
+}
+/* The bundled Song subset covers these fixed labels and painted verses.
+   Poem titles, questions and student writing use a complete device font. */
+.wordmark, .desk-spread, .scroll-heading, .scroll-options li strong,
+.folio-head h1, .folio-heading h1 {
+  --serif: "Xiye Desk Song", var(--reading-serif);
 }
 * { box-sizing: border-box; }
 body {

@@ -1,4 +1,4 @@
-import { compareRecitation } from './keyboard-compare.mjs?v=ink-2';
+import { compareRecitation } from './keyboard-compare.mjs?v=ink-3';
 
 export const keyboardAttemptPrefix = 'xiye.chinese.keyboard.v1.';
 export const keyboardDraftPrefix = 'xiye.keyboard.draft.v1.';

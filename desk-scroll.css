@@ -63,19 +63,54 @@
 .scroll-close { justify-self: start; padding-inline: .25rem; font-family: var(--serif); }
 .scroll-volume { justify-self: end; font: 500 .8rem/1.4 var(--serif); letter-spacing: .15em; color: var(--muted); }
 .scroll-options { padding-block: .65rem 1rem; }
-.scroll-bookmark { flex-wrap: wrap; gap: .8rem; padding-block: .35rem; }
+.scroll-bookmark { --ink-delay: 24ms; flex-wrap: wrap; gap: .8rem; padding: .35rem .25rem; }
 .scroll-bookmark span { font-size: .88rem; color: var(--muted); }
 .volume-sheet .scroll-options ul { margin: .55rem 0; }
-.volume-sheet .scroll-options li { border: 0; }
+.volume-sheet .scroll-options li { --ink-delay: 48ms; border: 0; }
+.volume-sheet .scroll-options li + li { --ink-delay: 96ms; }
 .volume-sheet .scroll-options li a {
   display: grid; grid-template-columns: minmax(0, 1fr); row-gap: .35rem;
   padding: 1.3rem .25rem;
   background: linear-gradient(90deg, var(--rule), transparent) bottom / 100% 1px no-repeat;
 }
 .volume-sheet .scroll-options li a::after { content: none; }
-.volume-sheet .scroll-options strong { font-weight: 500; }
+.scroll-options [data-mode-action] {
+  --option-ink: 0;
+  position: relative;
+  isolation: isolate;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 160ms var(--scroll-ease);
+}
+.scroll-options [data-mode-action]::before {
+  content: '';
+  position: absolute;
+  inset: .25rem 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--green) 10%, transparent), transparent 86%);
+  opacity: var(--option-ink);
+  transition: opacity 180ms var(--scroll-ease);
+}
+.volume-sheet .scroll-options strong { position: relative; justify-self: start; font-weight: 500; }
+.scroll-options strong::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 -.08em;
+  height: 1px;
+  background: linear-gradient(90deg, var(--green), transparent);
+  transform: scaleX(var(--option-ink));
+  transform-origin: left;
+  transition: transform 220ms var(--scroll-ease);
+}
+.volume-sheet .scroll-options [data-mode-action]:is(:focus-visible, .is-pressed) {
+  --option-ink: 1;
+  color: var(--green);
+}
+@media (hover: hover) and (pointer: fine) {
+  .volume-sheet .scroll-options [data-mode-action]:hover { --option-ink: 1; color: var(--green); }
+}
 @media (hover: none) {
-  .volume-sheet .scroll-options li a:hover { color: var(--ink); background-color: transparent; }
+  .volume-sheet .scroll-options li a:hover:not(:focus-visible):not(.is-pressed) { color: var(--ink); }
 }
 
 #study-main[data-scroll-phase] .volume-sheet {
@@ -86,14 +121,19 @@
   transition: clip-path 510ms var(--scroll-ease), opacity 330ms var(--scroll-ease);
 }
 #study-main[data-scroll-unfurled] .volume-sheet { clip-path: inset(0); opacity: 1; }
-#study-main[data-scroll-phase] .scroll-heading,
-#study-main[data-scroll-phase] .scroll-options {
+#study-main[data-scroll-phase] :is(.scroll-heading, .scroll-bookmark, .scroll-options li) {
   opacity: 0;
-  transform: translateY(5px);
-  transition: opacity 290ms var(--scroll-ease), transform 300ms var(--scroll-ease);
+  transform: translateY(4px);
+  transition: opacity 200ms var(--scroll-ease), transform 200ms var(--scroll-ease);
 }
-#study-main[data-scroll-ink] .scroll-heading,
-#study-main[data-scroll-ink] .scroll-options { opacity: 1; transform: none; }
+#study-main[data-scroll-ink] :is(.scroll-heading, .scroll-bookmark, .scroll-options li) { opacity: 1; transform: none; }
+#study-main[data-scroll-phase="opening"][data-scroll-ink] :is(.scroll-heading, .scroll-bookmark, .scroll-options li) {
+  transition-delay: var(--ink-delay, 0ms);
+}
+.mode-ink-enter :is(.scroll-heading, .scroll-bookmark, .scroll-options li) {
+  animation: mode-ink-appear 250ms var(--scroll-ease) var(--ink-delay, 0ms) backwards;
+}
+@keyframes mode-ink-appear { from { opacity: .18; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 #study-main[data-scroll-phase] :is(.desk-plate,.desk-index,.desk-contents,.subject-entry) {
   transition: transform 390ms var(--scroll-ease), opacity 370ms var(--scroll-ease);
 }
@@ -106,5 +146,6 @@
 .route-ink-enter { animation: page-ink-in 180ms var(--scroll-ease); }
 @media (prefers-reduced-motion: reduce) {
   #study-main[data-scroll-phase] * { transition: none !important; }
-  .route-ink-enter { animation: none; }
+  .route-ink-enter, .mode-ink-enter :is(.scroll-heading, .scroll-bookmark, .scroll-options li) { animation: none; }
+  .scroll-options [data-mode-action], .scroll-options [data-mode-action]::before, .scroll-options strong::after { transition: none; }
 }

@@ -1,11 +1,11 @@
-import { classFetch as fetch } from './class-api.mjs?v=ink-2';
-import { splitPoemParts } from './poem-parts.mjs?v=ink-2';
-import { letters, paperClauses } from './handwriting-review.mjs?v=ink-2';
-import { compareRecitation, comparisonFragment, differenceSummary } from './keyboard-compare.mjs?v=ink-2';
-import { keyboardStudyResult } from './poem-study-evidence.mjs?v=ink-2';
-import { getStudyScene } from './poem-study-content.mjs?v=ink-2';
-import { findOralPositions } from './poem-study-locate.mjs?v=ink-2';
-import { readStudyEvidence, writeStudyEvidence, saveStudyAttempt, studyDraftPrefix } from './poem-study-state.mjs?v=ink-2';
+import { classFetch as fetch } from './class-api.mjs?v=ink-3';
+import { splitPoemParts } from './poem-parts.mjs?v=ink-3';
+import { letters, paperClauses } from './handwriting-review.mjs?v=ink-3';
+import { compareRecitation, comparisonFragment, differenceSummary } from './keyboard-compare.mjs?v=ink-3';
+import { keyboardStudyResult } from './poem-study-evidence.mjs?v=ink-3';
+import { getStudyScene } from './poem-study-content.mjs?v=ink-3';
+import { findOralPositions } from './poem-study-locate.mjs?v=ink-3';
+import { readStudyEvidence, writeStudyEvidence, saveStudyAttempt, studyDraftPrefix } from './poem-study-state.mjs?v=ink-3';
 
 const $ = id => document.getElementById(id);
 const clean = text => letters(text).join('');

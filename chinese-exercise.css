@@ -99,7 +99,8 @@ button.text-link { text-decoration-color: var(--edge); }
   .choice-row:hover:not(:has(input:checked)), .word-chips label:hover:not(:has(input:checked)), .poem-item:hover { background-color: var(--wash); }
 }
 .excerpt { margin: .25rem 0 1.45rem; max-width: 38em; font: 500 1.15rem/1.95 var(--serif); }
-blockquote.excerpt, .poem-scene { border-inline-start: 2px solid var(--rule); padding-inline-start: 1rem; }
+blockquote.excerpt { border-inline-start: 2px solid var(--rule); padding-inline-start: 1rem; }
+.poem-scene { text-wrap: pretty; }
 .pick-row { display: grid; align-items: baseline; grid-template-columns: 1.5rem minmax(0,1fr); gap: .5rem; padding-block: .3rem; }
 .pick-row:has(> :only-child) { grid-template-columns: 1fr; }
 .word-chips label {
@@ -126,15 +127,26 @@ blockquote.excerpt, .poem-scene { border-inline-start: 2px solid var(--rule); pa
 }
 .study-paper .field input { width: min(100%, 17rem); }
 .workbook .study-paper .field textarea {
+  --writing-line: 2em;
   width: 100%;
-  min-height: 8.7rem;
-  padding: .6rem .75rem;
-  font: 500 1.17rem/2.1 var(--serif);
+  min-height: calc(3 * var(--writing-line) + 1rem + 2px);
+  padding: .5rem .75rem;
+  font: 500 1.17rem/var(--writing-line) var(--serif);
   border-color: var(--rule);
   border-bottom-color: var(--edge);
-  background-image: repeating-linear-gradient(to bottom, transparent 0 calc(2.1em - 1px), var(--rule) calc(2.1em - 1px) 2.1em);
-  background-position: 0 .57rem;
+  background-color: transparent;
+  background-image: linear-gradient(to bottom, transparent calc(100% - 1px), var(--rule) 0);
+  background-size: 100% var(--writing-line);
+  background-origin: content-box;
+  background-clip: content-box;
+  background-attachment: local;
+  background-repeat: repeat-y;
   resize: vertical;
+}
+.workbook .study-paper .field textarea:focus-visible {
+  border-color: var(--green);
+  outline: 1px solid var(--green);
+  outline-offset: 0;
 }
 .study-paper .write-entry {
   grid-template-columns: minmax(0,1fr) minmax(0,16rem);
