@@ -1,5 +1,5 @@
-import { classFetch as fetch } from './class-api.mjs?v=ink-3';
-import { isClassEdition } from './practice-edition.mjs?v=ink-3';
+import { classFetch as fetch } from './class-api.mjs?v=ink-4';
+import { isClassEdition } from './practice-edition.mjs?v=ink-4';
 
 const el = id => document.getElementById(id);
 const form = el('search-form');

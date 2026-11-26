@@ -28,12 +28,14 @@ export function createDeskScroll(main, releaseDesk) {
   function open(html, returnY) {
     const desk = main.querySelector('.desk-spread');
     let sheet = main.querySelector('.volume-sheet');
+    if (returnY != null) window.scrollTo(0, returnY);
+    // Scroll and focus can force layout. Mount a new sheet only after its
+    // opening styles apply so its first painted frame is already folded.
+    begin('opening', window.scrollY);
     if (!sheet) {
       main.insertAdjacentHTML('beforeend', html);
       sheet = main.lastElementChild;
     }
-    if (returnY != null) window.scrollTo(0, returnY);
-    begin('opening', window.scrollY);
     desk.inert = true;
     desk.querySelector(`.subject-${sheet.dataset.volume}`).classList.add('is-pressed');
     sheet.inert = true;
@@ -56,8 +58,9 @@ export function createDeskScroll(main, releaseDesk) {
     // Commit the folded style even when returning via browser Forward.
     sheet.getBoundingClientRect();
     later(95, () => { main.dataset.scrollUnfurled = ''; });
-    later(310, reveal);
-    later(620, finish);
+    later(215, reveal);
+    // Keep both sheets mounted until the last choice has finished inking in.
+    later(850, finish);
   }
 
   function close(html, mount, returnY = 0) {

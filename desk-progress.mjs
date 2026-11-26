@@ -1,6 +1,6 @@
-import { dueMistakes, getScreening } from './chinese-state.mjs?v=ink-3';
-import { getKeyboardAttempt, keyboardDraftPrefix } from './keyboard-history.mjs?v=ink-3';
-import { studyDraftPrefix } from './poem-study-state.mjs?v=ink-3';
+import { dueMistakes, getScreening } from './chinese-state.mjs?v=ink-4';
+import { getKeyboardAttempt, keyboardDraftPrefix } from './keyboard-history.mjs?v=ink-4';
+import { studyDraftPrefix } from './poem-study-state.mjs?v=ink-4';
 
 export function getDeskProgress(state) {
   const progress = {};

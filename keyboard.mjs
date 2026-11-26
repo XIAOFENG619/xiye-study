@@ -1,9 +1,9 @@
-import { classFetch as fetch } from './class-api.mjs?v=ink-3';
-import { splitPoemParts } from './poem-parts.mjs?v=ink-3';
-import { compareRecitation, comparisonFragment, differenceSummary } from './keyboard-compare.mjs?v=ink-3';
-import { getKeyboardAttempt, saveKeyboardAttempt, keyboardDraftPrefix } from './keyboard-history.mjs?v=ink-3';
-import { keyboardStudyResult } from './poem-study-evidence.mjs?v=ink-3';
-import { readStudyEvidence, writeStudyEvidence } from './poem-study-state.mjs?v=ink-3';
+import { classFetch as fetch } from './class-api.mjs?v=ink-4';
+import { splitPoemParts } from './poem-parts.mjs?v=ink-4';
+import { compareRecitation, comparisonFragment, differenceSummary } from './keyboard-compare.mjs?v=ink-4';
+import { getKeyboardAttempt, saveKeyboardAttempt, keyboardDraftPrefix } from './keyboard-history.mjs?v=ink-4';
+import { keyboardStudyResult } from './poem-study-evidence.mjs?v=ink-4';
+import { readStudyEvidence, writeStudyEvidence } from './poem-study-state.mjs?v=ink-4';
 
 const $ = id => document.getElementById(id);
 const initial = new URL(location.href).searchParams;

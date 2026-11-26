@@ -1,4 +1,4 @@
-import { assistedQuestion } from './assisted-questions.mjs?v=ink-3';
+import { assistedQuestion } from './assisted-questions.mjs?v=ink-4';
 
 const storageKey = 'xiye.chinese.practice.v1';
 const marks = ['\u0304', '\u0301', '\u030c', '\u0300'];

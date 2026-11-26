@@ -1,5 +1,5 @@
-import { assistedQueue, dueMistakes, getScreening } from './chinese-state.mjs?v=ink-3';
-import { isClassEdition } from './practice-edition.mjs?v=ink-3';
+import { assistedQueue, dueMistakes, getScreening } from './chinese-state.mjs?v=ink-4';
+import { isClassEdition } from './practice-edition.mjs?v=ink-4';
 
 export function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>"']/gu, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -42,9 +42,9 @@ export function renderModeMenu(section, resume = null, screened = 0) {
   const bookmark = resume ? `<a class="scroll-bookmark" data-mode-action="resume" href="${esc(resume.href)}">续前卷<span>${esc(resume.label)}</span></a>` : '';
   return `<section class="workbook mode-menu volume-sheet${poetry ? ' poetry-sheet' : ''}" data-volume="${section}" aria-labelledby="scroll-title">
     <header class="scroll-heading">
-      <a class="scroll-close" data-close-scroll data-mode-action="close" href="#desk" aria-label="合卷，返回练习书桌">合卷</a>
       <h1 id="scroll-title" tabindex="-1">${titles[section]}</h1>
       <span class="scroll-volume">${volume}</span>
+      <a class="scroll-close" data-close-scroll data-mode-action="close" href="#desk" aria-label="合卷，返回练习书桌">合卷</a>
     </header>
     <div class="scroll-options">${bookmark}<ul aria-label="选择练习方式">${links}</ul></div>
   </section>`;

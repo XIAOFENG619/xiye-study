@@ -1,5 +1,5 @@
-import { renderDeskWindow } from './desk-window.mjs?v=ink-3';
-import { escapeHtml } from './chinese-views.mjs?v=ink-3';
+import { renderDeskWindow } from './desk-window.mjs?v=ink-4';
+import { escapeHtml } from './chinese-views.mjs?v=ink-4';
 
 const subjects = [
   { key: 'poetry', scene: 'poetry', volume: '壹', title: '古诗练习', task: '分段学诗 · 情境默写' },

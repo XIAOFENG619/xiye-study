@@ -1,11 +1,11 @@
-import { classFetch as fetch } from './class-api.mjs?v=ink-3';
-import { diffPaperLine, paperClauses } from './handwriting-review.mjs?v=ink-3';
-import { buildPaperRows, syncMissingRows, paperDecisions, isActive, isGap, isPending, pendingCount } from './handwriting-rows.mjs?v=ink-3';
-import { getPaperReview, savePaperReview } from './handwriting-history.mjs?v=ink-3';
-import { splitPoemParts } from './poem-parts.mjs?v=ink-3';
-import { isClassEdition } from './practice-edition.mjs?v=ink-3';
-import { paperStudyResult } from './poem-study-evidence.mjs?v=ink-3';
-import { readStudyEvidence, writeStudyEvidence } from './poem-study-state.mjs?v=ink-3';
+import { classFetch as fetch } from './class-api.mjs?v=ink-4';
+import { diffPaperLine, paperClauses } from './handwriting-review.mjs?v=ink-4';
+import { buildPaperRows, syncMissingRows, paperDecisions, isActive, isGap, isPending, pendingCount } from './handwriting-rows.mjs?v=ink-4';
+import { getPaperReview, savePaperReview } from './handwriting-history.mjs?v=ink-4';
+import { splitPoemParts } from './poem-parts.mjs?v=ink-4';
+import { isClassEdition } from './practice-edition.mjs?v=ink-4';
+import { paperStudyResult } from './poem-study-evidence.mjs?v=ink-4';
+import { readStudyEvidence, writeStudyEvidence } from './poem-study-state.mjs?v=ink-4';
 
 const $ = id => document.getElementById(id);
 const esc = text => String(text ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[c]);

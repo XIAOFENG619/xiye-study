@@ -100,7 +100,11 @@ button.text-link { text-decoration-color: var(--edge); }
 }
 .excerpt { margin: .25rem 0 1.45rem; max-width: 38em; font: 500 1.15rem/1.95 var(--serif); }
 blockquote.excerpt { border-inline-start: 2px solid var(--rule); padding-inline-start: 1rem; }
-.poem-scene { text-wrap: pretty; }
+.poem-scene {
+  text-align: justify;
+  text-justify: inter-ideograph;
+  text-align-last: start;
+}
 .pick-row { display: grid; align-items: baseline; grid-template-columns: 1.5rem minmax(0,1fr); gap: .5rem; padding-block: .3rem; }
 .pick-row:has(> :only-child) { grid-template-columns: 1fr; }
 .word-chips label {

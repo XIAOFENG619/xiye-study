@@ -1,14 +1,14 @@
-import { classFetch as fetch } from './class-api.mjs?v=ink-3';
-import { renderHome } from './chinese-home.mjs?v=ink-3';
-import { isClassEdition } from './practice-edition.mjs?v=ink-3';
-import { mountDeskWindow } from './desk-window.mjs?v=ink-3';
-import { createDeskScroll, bindDeskPress } from './desk-scroll.mjs?v=ink-3';
-import { getDeskProgress, getVolumeResume } from './desk-progress.mjs?v=ink-3';
-import { renderActive, renderModeMenu, renderPoemCatalog, renderRecords, escapeHtml } from './chinese-views.mjs?v=ink-3';
-import { dueMistakes, feedbackKeys, getScreening, loadState, saveState, step } from './chinese-state.mjs?v=ink-3';
-import { listPaperReviews, paperReviewPrefix } from './handwriting-history.mjs?v=ink-3';
-import { listKeyboardAttempts, keyboardAttemptPrefix } from './keyboard-history.mjs?v=ink-3';
-import { listStudyAttempts, studyAttemptPrefix } from './poem-study-state.mjs?v=ink-3';
+import { classFetch as fetch } from './class-api.mjs?v=ink-4';
+import { renderHome } from './chinese-home.mjs?v=ink-4';
+import { isClassEdition } from './practice-edition.mjs?v=ink-4';
+import { mountDeskWindow } from './desk-window.mjs?v=ink-4';
+import { createDeskScroll, bindDeskPress } from './desk-scroll.mjs?v=ink-4';
+import { getDeskProgress, getVolumeResume } from './desk-progress.mjs?v=ink-4';
+import { renderActive, renderModeMenu, renderPoemCatalog, renderRecords, escapeHtml } from './chinese-views.mjs?v=ink-4';
+import { dueMistakes, feedbackKeys, getScreening, loadState, saveState, step } from './chinese-state.mjs?v=ink-4';
+import { listPaperReviews, paperReviewPrefix } from './handwriting-history.mjs?v=ink-4';
+import { listKeyboardAttempts, keyboardAttemptPrefix } from './keyboard-history.mjs?v=ink-4';
+import { listStudyAttempts, studyAttemptPrefix } from './poem-study-state.mjs?v=ink-4';
 
 const main = document.getElementById('study-main');
 const sectionNames = { poetry: '古诗练习', sound: '字音练习', spelling: '字形练习' };

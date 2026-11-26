@@ -1,5 +1,5 @@
-import { SCENES, DEBUG_HOTSPOTS } from './desk-scenes.mjs?v=ink-3';
-import { createDeskParticles } from './desk-particles.mjs?v=ink-3';
+import { SCENES, DEBUG_HOTSPOTS } from './desk-scenes.mjs?v=ink-4';
+import { createDeskParticles } from './desk-particles.mjs?v=ink-4';
 
 const [initial] = SCENES;
 const fadeMs = 700;
