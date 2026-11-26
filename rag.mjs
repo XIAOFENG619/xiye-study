@@ -158,6 +158,6 @@ el('ask').addEventListener('click', async () => {
   }
 });
 
-for (const control of document.querySelectorAll('#search-form :disabled, #quick-search button:disabled')) {
+for (const control of document.querySelectorAll('#search-form [disabled], #quick-search button[disabled]')) {
   control.disabled = false;
 }
