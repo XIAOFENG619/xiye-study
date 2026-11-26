@@ -1,13 +1,13 @@
 import { renderDeskWindow } from './desk-window.mjs';
 
 const subjects = [
-  { key: 'poetry', scene: 'poetry', title: '古诗练习', task: '选篇，情境默写' },
+  { key: 'poetry', scene: 'poetry', title: '古诗练习', task: '分段读背，情境默写' },
   { key: 'sound', scene: 'pronunciation', title: '字音练习', task: '辨读音，给考字注音' },
   { key: 'spelling', scene: 'character', title: '字形练习', task: '辨字形，写出完整词语' },
 ];
 
 function subjectEntry({ key, scene, title, task }) {
-  const practice = `<a class="subject-entry subject-${key}" data-scene-id="${scene}" href="#${key}">
+  const practice = `<a class="subject-entry subject-${key}" data-scene-id="${scene}" href="#${key}-modes">
     <div><h2>${title}</h2><p>${task}</p></div><span class="entry-arrow" aria-hidden="true"></span>
   </a>`;
   if (key === 'poetry') return practice;

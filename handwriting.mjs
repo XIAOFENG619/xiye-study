@@ -4,11 +4,14 @@ import { buildPaperRows, syncMissingRows, paperDecisions, isActive, isGap, isPen
 import { getPaperReview, savePaperReview } from './handwriting-history.mjs';
 import { splitPoemParts } from './poem-parts.mjs';
 import { isClassEdition } from './practice-edition.mjs';
+import { paperStudyResult } from './poem-study-evidence.mjs';
+import { readStudyEvidence, writeStudyEvidence } from './poem-study-state.mjs';
 
 const $ = id => document.getElementById(id);
 const esc = text => String(text ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[c]);
 const plain = value => String(value ?? '').normalize('NFKC').replace(/[\s\p{P}]/gu, '');
 const params = new URLSearchParams(location.search);
+let study = params.get('study') === '1';
 let poems = [], poem, parts = [];
 let review, photoUrl, lastFile, serial = 0;
 let fetching = false;
@@ -31,6 +34,9 @@ async function loadPoems() {
       return new Option(multiple ? `${p.title} · ${p.locator}` : p.title, p.id);
     }));
     const initial = poems.find(p => p.id === params.get('poem')) || poems.find(p => p.title === '将进酒') || poems[0];
+    const requested = Number(params.get('part'));
+    if (params.get('poem') !== initial.id || !Number.isInteger(requested) || requested < 0 ||
+        requested > splitPoemParts(initial.text).length) study = false;
     $('poem').value = initial.id;
     selectPoem(params.get('part'));
     busy(false);
@@ -46,16 +52,19 @@ function selectPoem(part = 0) {
   parts = splitPoemParts(poem.text);
   $('part').replaceChildren(new Option('全篇选句','0'));
   parts.forEach((_,i) => $('part').add(new Option(`第 ${i + 1} 段`, String(i + 1))));
-  if (Number(part) >= 1 && Number(part) <= $('part').options.length - 1) $('part').value = String(Number(part));
+  if (Number.isInteger(Number(part)) && Number(part) >= 1 && Number(part) <= parts.length) $('part').value = String(Number(part));
   applyPart();
 }
 function applyPart() {
-  $('keyboard-link').href = './keyboard.html?' + new URLSearchParams({ poem: poem.id, part: $('part').value });
+  const target = new URLSearchParams({ poem: poem.id, part: $('part').value });
+  if (study) target.set('study', '1');
+  $('keyboard-link').href = './keyboard.html?' + target;
   $('keyboard-link').hidden = false;
   $('reading').open = false;
   $('reading-text').textContent = selectedText();
   $('available-references').replaceChildren(...paperClauses(selectedText()).map(text => new Option(text)));
   const url = new URL(location.href);
+  if (!study) url.searchParams.delete('study');
   url.searchParams.set('poem',poem.id);
   if (+$('part').value) url.searchParams.set('part',$('part').value);
   else url.searchParams.delete('part');
@@ -239,6 +248,7 @@ function lineCard(row,number) {
     </article>`;
 }
 function render() {
+  $('study-next').hidden = true;
   const expanded = new Set(Array.from($('lines').querySelectorAll('details[data-group][open]'), d=>d.dataset.group));
   const rows = review.rows;
   const active=rows.filter(isActive), pending=active.filter(isPending);
@@ -266,6 +276,7 @@ function render() {
   $('lines').querySelectorAll('canvas').forEach(paint);
 }
 function editor(row,article) {
+  $('study-next').hidden = true;
   const slot=article.querySelector('.editor-slot');
   if (slot.firstElementChild) { slot.replaceChildren(); return; }
   const form=document.createElement('form');
@@ -320,6 +331,7 @@ $('lines').addEventListener('submit',event=>{
   change(row,'checked');
 });
 $('review').addEventListener('input',event=>{
+  $('study-next').hidden = true;
   if (event.target.name==='reference') event.target.setCustomValidity('');
 });
 $('lines').addEventListener('toggle',event=>{
@@ -338,6 +350,24 @@ $('manual-form').addEventListener('submit',event=>{
   form.reset();
   change(row,'open');
 });
+function saveStudyResult() {
+  const part = Number($('part').value);
+  if (!study || part < 1 || !parts[part - 1]) return;
+  const result = paperStudyResult(review.rows, parts[part - 1]);
+  let evidence = readStudyEvidence(poem.id, part);
+  // Selecting the same image restores its saved decisions. Keep the running
+  // question when that exact revision is saved again after leaving this page.
+  if (evidence?.paperReviewId !== review.id || evidence.paperRevision !== review.revision ||
+      evidence.status !== result.status || JSON.stringify(evidence.weakClauses) !== JSON.stringify(result.weakClauses) ||
+      JSON.stringify(evidence.weakIndexes) !== JSON.stringify(result.weakIndexes)) {
+    evidence = writeStudyEvidence({ poemId: poem.id, part, source: 'paper', ...result,
+      paperReviewId: review.id, paperRevision: review.revision });
+  }
+  const link = $('study-next');
+  link.href = './poem-study.html?' + new URLSearchParams({ poem: poem.id, part, review: 1, evidence: evidence.id });
+  link.textContent = result.status === 'pending' && !result.weakClauses.length ? '返回本段学习' : '按本次默写巩固';
+  link.hidden = false;
+}
 async function save() {
   const selected=review.rows.filter(isActive);
   if (fetching || $('save').disabled) return;
@@ -358,6 +388,11 @@ async function save() {
     review.revision=stored.revision;
     $('history-link').hidden=false;
     notice(`已保存。本次核对 ${selected.length} 行，确认错漏 ${mistakes.length} 处${pending?'，待核 '+pending+' 处。重选这张照片可以继续核对。':'。'}`);
+    try { saveStudyResult(); }
+    catch {
+      $('study-next').hidden = true;
+      notice('纸面核对已保存，暂时无法接续这段的巩固练习。');
+    }
   } catch (error) {
     notice(`保存失败。${error.message || '可以重试。'}`);
   } finally { busy(false); $('save').disabled=false; }

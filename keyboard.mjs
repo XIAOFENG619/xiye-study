@@ -2,9 +2,12 @@ import { classFetch as fetch } from './class-api.mjs';
 import { splitPoemParts } from './poem-parts.mjs';
 import { compareRecitation } from './keyboard-compare.mjs';
 import { getKeyboardAttempt, saveKeyboardAttempt } from './keyboard-history.mjs';
+import { keyboardStudyResult } from './poem-study-evidence.mjs';
+import { readStudyEvidence, writeStudyEvidence } from './poem-study-state.mjs';
 
 const $ = id => document.getElementById(id);
 const initial = new URL(location.href).searchParams;
+let study = initial.get('study') === '1';
 const draftPrefix = 'xiye.keyboard.draft.v1.';
 let poems = [];
 let poem;
@@ -28,13 +31,16 @@ function changePhase(next) {
   $('originals').open = false;
   $('answer').value = '';
   $('retry-save').hidden = true;
+  $('study-next').hidden = true;
   notice('');
 }
 
-function setLinks(poemId, number, id = null) {
+function setLinks(poemId, number, id = null, evidenceId = null) {
   const params = new URLSearchParams(scope(poemId, number));
+  if (study) params.set('study', '1');
   $('paper-link').href = './handwriting.html?' + params;
   if (id) params.set('attempt', id);
+  if (evidenceId) params.set('evidence', evidenceId);
   history.replaceState(null, '', location.pathname + '?' + params);
 }
 
@@ -60,7 +66,6 @@ function choosePoem(id, requestedPart) {
   $('poem').value = poem.id;
   $('part').replaceChildren(new Option('全篇', '0'), ...parts.map((_, i) => new Option('第 ' + (i + 1) + ' 段', i + 1)));
   $('part').value = String(part);
-  $('paper-link').href = './handwriting.html?' + scope(poem.id, part);
 }
 
 function openScope() {
@@ -124,7 +129,7 @@ function markedChange(segment) {
   return tag;
 }
 
-function feedback(saved) {
+function feedback(saved, evidenceId) {
   changePhase('feedback');
   const {answer, reference} = attempt;
   const grade = compareRecitation(answer, reference);
@@ -143,7 +148,12 @@ function feedback(saved) {
   $('original-reference').textContent = reference;
   $('feedback-title').textContent = '《' + attempt.poemTitle + '》' + (attempt.part ? '第 ' + attempt.part + ' 段' : '全篇') + ' · 默写核对';
   $('again').disabled = !poem;
-  if (saved) setLinks(attempt.poemId, attempt.part, attempt.id);
+  if (saved) setLinks(attempt.poemId, attempt.part, attempt.id, evidenceId);
+  if (study && evidenceId && part > 0 && attempt.reference === parts?.[part - 1]) {
+    const link = $('study-next');
+    link.href = './poem-study.html?' + new URLSearchParams({ poem: attempt.poemId, part, review: 1, evidence: evidenceId });
+    link.hidden = false;
+  }
   $('feedback-title').focus();
 }
 
@@ -162,7 +172,16 @@ async function submitAttempt() {
     }
     await saveKeyboardAttempt(attempt);
     try { sessionStorage.removeItem(draftKey()); } catch { /* History was saved. */ }
-    feedback(true);
+    let evidenceId;
+    if (study && part > 0 && attempt.poemId === poem.id && attempt.part === part &&
+        attempt.reference === parts[part - 1]) {
+      try {
+        evidenceId = writeStudyEvidence({ poemId: poem.id, part, source: 'keyboard',
+          ...keyboardStudyResult(attempt.answer, attempt.reference) }).id;
+      } catch { /* Keep the saved dictation even if session storage is unavailable. */ }
+    }
+    feedback(true, evidenceId);
+    if (study && part > 0 && !evidenceId) notice('本次默写已保存，暂时无法接续这段的巩固练习。');
   } catch (error) {
     feedback(false);
     notice(error.message || '学习记录保存失败，可重试。');
@@ -195,9 +214,11 @@ async function load() {
       return;
     }
     choosePoem(requested ?? (poems.find(item => item.title === '将进酒')?.id), saved?.part ?? initial.get('part'));
+    if (study && (poem.id !== initial.get('poem') || part !== Number(initial.get('part')))) study = false;
     $('poem').disabled = $('part').disabled = false;
     if (!saved) {
       openScope();
+      if (study && part > 0 && initial.get('covered') === '1' && !initial.has('attempt') && phase === 'reading') startAttempt();
       if (initial.has('attempt')) notice('这个浏览器里没有这次学习记录，已打开篇目。');
       return;
     }
@@ -210,7 +231,11 @@ async function load() {
     $('setup').hidden = $('paper-link').hidden = true;
   }
   attempt = saved;
-  feedback(true);
+  let current;
+  if (study && part > 0 && initial.get('evidence')) {
+    try { current = readStudyEvidence(saved.poemId, saved.part); } catch { /* History remains readable. */ }
+  }
+  feedback(true, current?.id === initial.get('evidence') ? current?.id : null);
 }
 
 $('poem').addEventListener('change', () => { choosePoem($('poem').value, 1); openScope(); });

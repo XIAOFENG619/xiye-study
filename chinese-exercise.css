@@ -6,6 +6,21 @@
   margin: 0 auto;
   color: var(--ink);
 }
+.mode-menu { max-width: 48rem; }
+.mode-menu ul { padding: 0; margin: 1.5rem 0 2rem; list-style: none; }
+.mode-menu li { border-bottom: 1px solid var(--rule); }
+.mode-menu li a {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: .35rem 1rem;
+  padding: 1.3rem .4rem;
+  color: var(--ink);
+  text-decoration: none;
+}
+.mode-menu li a:hover { color: var(--green); background: var(--sheet); }
+.mode-menu li a::after { content: '→'; grid-area: 1 / 2 / 3 / 3; align-self: center; color: var(--green); }
+.mode-menu strong { font: 600 1.5rem/1.4 var(--serif); }
+.mode-menu li span { grid-column: 1; color: var(--muted); font-size: .94rem; }
 .folio-head {
   display: flex;
   align-items: baseline;

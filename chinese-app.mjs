@@ -1,11 +1,12 @@
 import { classFetch as fetch } from './class-api.mjs';
-import { renderHome } from './chinese-home.mjs';
+import { renderHome } from './chinese-home.mjs?v=study-1';
 import { isClassEdition } from './practice-edition.mjs';
 import { mountDeskWindow } from './desk-window.mjs';
-import { renderActive, renderPoemCatalog, renderRecords, escapeHtml } from './chinese-views.mjs';
+import { renderActive, renderModeMenu, renderPoemCatalog, renderRecords, escapeHtml } from './chinese-views.mjs?v=study-1';
 import { dueMistakes, feedbackKeys, loadState, saveState, step } from './chinese-state.mjs';
 import { listPaperReviews, paperReviewPrefix } from './handwriting-history.mjs';
 import { listKeyboardAttempts, keyboardAttemptPrefix } from './keyboard-history.mjs';
+import { listStudyAttempts, studyAttemptPrefix } from './poem-study-state.mjs';
 
 const main = document.getElementById('study-main');
 const sectionNames = { poetry: '古诗练习', sound: '字音练习', spelling: '字形练习' };
@@ -161,7 +162,9 @@ async function route() {
   }
   setNav(target === 'records' ? 'records' : 'desk');
   try {
-    if (target === 'records') return show(renderRecords(state, listPaperReviews(), listKeyboardAttempts()));
+    if (target === 'records') return show(renderRecords(state, listPaperReviews(), listKeyboardAttempts(), listStudyAttempts()));
+    const modeSection = target.endsWith('-modes') && target.slice(0, -6);
+    if (modeSection && Object.hasOwn(sectionNames, modeSection)) return show(renderModeMenu(modeSection));
     if (target.startsWith('review?')) {
       const query = new URLSearchParams(target.slice('review?'.length));
       const section = query.get('section'), sourceId = query.get('id');
@@ -331,7 +334,7 @@ document.addEventListener('visibilitychange', () => {
   if (['desk', 'records'].includes(page()) || (page() === 'continue' && state.active?.phase === 'feedback')) route();
 });
 window.addEventListener('storage', event => {
-  if (event.key?.startsWith(paperReviewPrefix) || event.key?.startsWith(keyboardAttemptPrefix)) {
+  if ([paperReviewPrefix, keyboardAttemptPrefix, studyAttemptPrefix].some(prefix => event.key?.startsWith(prefix))) {
     if (page() === 'records') route();
     return;
   }

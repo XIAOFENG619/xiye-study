@@ -28,6 +28,19 @@ function pageHead(title, note = '') {
   return `<header class="folio-head"><h1>${esc(title)}</h1>${note ? `<span>${esc(note)}</span>` : ''}</header>`;
 }
 
+export function renderModeMenu(section) {
+  const poetry = section === 'poetry';
+  const modes = [
+    ['直接做题', '#' + section, { poetry: '选一篇，根据情境默写原句', sound: '成组辨音，兼练短文辨音', spelling: '在四组词语中辨别正误' }[section]],
+    poetry ? ['学习古诗', './poem-study.html', '选一段读背，再按刚才的表现巩固']
+      : ['先摸底', './screening.html?section=' + section, '逐字四选一，找出错选和拿不准的字'],
+  ];
+  const links = modes.map(([label, href, detail], i) => `<li><a href="${href}" aria-labelledby="mode-${i}" aria-describedby="mode-note-${i}">
+    <strong id="mode-${i}">${label}</strong><span id="mode-note-${i}">${detail}</span></a></li>`).join('');
+  return `<div class="workbook mode-menu">${pageHead(titles[section])}<ul aria-label="选择练习方式">${links}</ul>
+    <a class="back-link" href="#desk">回练习书桌</a></div>`;
+}
+
 function markedWord(word, target) {
   if (!target || !word.includes(target)) return esc(word);
   return word.split(target).map(esc).join(`<span class="marked">${esc(target)}</span>`);
@@ -174,7 +187,7 @@ function recordDate(value) {
   return Number.isNaN(date.getTime()) ? '' : date.toLocaleDateString('zh-CN',{ year: 'numeric', month: '2-digit', day: '2-digit' });
 }
 
-export function renderRecords(state, paperReviews = [], keyboardAttempts = []) {
+export function renderRecords(state, paperReviews = [], keyboardAttempts = [], studyAttempts = []) {
   const due = new Set(dueMistakes(state).map(m => m.key));
   const maskedSounds = new Set(state.mistakes.filter(m => m.section === 'sound' && m.status === 'pending').map(m => m.word));
   const maskedSpellings = new Set(state.mistakes.filter(m => m.section === 'spelling' && m.status === 'pending').map(m => m.word));
@@ -233,12 +246,24 @@ export function renderRecords(state, paperReviews = [], keyboardAttempts = []) {
     const link = './keyboard.html?' + esc(new URLSearchParams({ attempt: attempt.id }));
     return `<div class="record-row"><div><strong>${esc(attempt.poemTitle)}</strong><small>${esc(recordDate(attempt.submittedAt))} · ${esc(label)}</small></div><span>${esc(result)}</span><a href="${link}">回看默写</a></div>`;
   }).join('');
-  if (!mistakes && !history && !paperRows && !keyboardRows && !screeningRows) {
+  const studyRows = studyAttempts.map(a => {
+    const method = a.kind === 'scene' ? '情境默写' : '原句巩固';
+    let outcome = a.correct ? '当场答对' : '当场未答对';
+    if (!a.answer.trim()) outcome = '未写出 · 已看原句';
+    else if (a.usedHint) outcome = a.correct ? '提示后答对' : '提示后仍需练习';
+    const source = { oral: '自己试背', keyboard: '键盘默写', paper: '纸面核对' }[a.source];
+    return `<div class="record-row"><div><strong>${esc(a.poemTitle)} · 第 ${esc(a.part)} 段</strong>
+      <small>${esc(recordDate(a.createdAt))} · ${method} · ${outcome}</small></div>
+      <details><summary>回看作答</summary><p>本次试背 · ${source}</p><p>${esc(a.prompt)}</p><p>我的答案　${esc(a.answer) || '未写出'}</p>
+      <p>参考原句　${esc(a.expected)}</p></details></div>`;
+  }).join('');
+  if (!mistakes && !history && !paperRows && !keyboardRows && !screeningRows && !studyRows) {
     return `<div class="workbook">${pageHead('学习记录')}<section class="record-book"><h2>还没有练习记录</h2><a class="button-primary" href="#desk">去做第一题</a></section></div>`;
   }
   return `<div class="workbook">${pageHead('学习记录')}<section class="record-book"><h2>错词复考</h2>${mistakes || '<p class="worksheet-note">暂时没有待考的词。</p>'}</section>
     ${screeningRows ? `<section class="record-book"><h2>逐字筛查</h2>${screeningRows}</section>` : ''}
     ${keyboardRows ? `<section class="record-book"><h2>键盘默写</h2>${keyboardRows}</section>` : ''}
     ${paperRows ? `<section class="record-book"><h2>纸上默写</h2>${paperRows}</section>` : ''}
+    ${studyRows ? `<section class="record-book"><h2>古诗段后巩固</h2>${studyRows}</section>` : ''}
     <section class="record-book"><h2>作答记录</h2>${history || '<p class="worksheet-note">还没有正式作答记录。</p>'}</section></div>`;
 }
