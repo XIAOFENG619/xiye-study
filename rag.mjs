@@ -157,3 +157,7 @@ el('ask').addEventListener('click', async () => {
     if (current === revision) el('ask').disabled = false;
   }
 });
+
+for (const control of document.querySelectorAll('#search-form :disabled, #quick-search button:disabled')) {
+  control.disabled = false;
+}
