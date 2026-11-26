@@ -1,0 +1,130 @@
+.archive {
+  --archive-rule: var(--rule);
+  --archive-muted: var(--muted);
+  width: min(100% - 4rem, 52rem);
+  margin: 0 auto;
+  padding-block: 3.5rem 5rem;
+  color: var(--ink);
+}
+.archive:focus { outline: none; }
+.archive [hidden] { display: none; }
+.archive .a11y-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.archive h1, .archive h2, .source-hit h3 {
+  font-family: var(--serif, "Songti SC", STSong, serif);
+  font-weight: 600;
+  line-height: 1.25;
+}
+.archive h1 { margin: 0 0 2rem; font-size: 3rem; }
+.archive h2 { margin: 0; font-size: 1.55rem; }
+.search-row {
+  display: flex;
+  align-items: stretch;
+  gap: .75rem;
+}
+.archive .search-row input {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 3.25rem;
+  padding: .65rem 1rem;
+  border: 1px solid var(--edge);
+  border-radius: 4px;
+  background: var(--sheet);
+  font-size: 1.065rem;
+}
+.search-row input::placeholder { color: var(--archive-muted); }
+.search-row .button-primary { padding-inline: 1.55rem; }
+.filters, .filters label, .quick-search, .copy-controls {
+  display: flex;
+  align-items: center;
+}
+.filters {
+  flex-wrap: wrap;
+  gap: .4rem 1.5rem;
+  margin-block: .75rem;
+  color: var(--archive-muted);
+  font-size: .875rem;
+}
+.filters label { gap: .375rem; }
+.archive .filters select {
+  min-height: 2.5rem;
+  padding: .2rem .4rem;
+  background: transparent;
+  color: var(--ink);
+  border: 0;
+  border-radius: 3px;
+  font: inherit;
+}
+.archive .filters select:hover { background: var(--wash); }
+.quick-search {
+  margin-top: 1.25rem;
+  padding-top: .9rem;
+  border-top: 1px solid var(--archive-rule);
+  flex-wrap: wrap;
+  gap: 0 .9rem;
+  color: var(--archive-muted);
+  font-size: .875rem;
+}
+.quick-search button, .source-hit a, .archive summary {
+  color: var(--green);
+  text-decoration: underline;
+  text-underline-offset: .19em;
+  text-decoration-color: var(--edge);
+}
+.quick-search button {
+  min-height: 2.5rem;
+  background: transparent;
+  border: none;
+  padding: .25rem;
+  font: inherit;
+}
+.quick-search button:hover, .source-hit a:hover, .archive summary:hover { text-decoration-color: currentColor; }
+.library-status { color: var(--archive-muted); margin: 1.25rem 0 0; }
+.library-status:empty, #draft-note:empty { display: none; }
+#results { margin-top: 2.5rem; }
+.result-head {
+  border-bottom: 1px solid var(--edge);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: .875rem;
+}
+#result-title { overflow-wrap: anywhere; }
+#hit-count { color: var(--archive-muted); flex: none; font-size: .875rem; }
+.source-hit {
+  position: relative;
+  padding-block: 1.35rem;
+  border-bottom: 1px solid var(--archive-rule);
+}
+.source-hit h3 { font-size: 1.5rem; margin: 0 5em .4rem 0; overflow-wrap: anywhere; }
+.source-hit p, #draft {
+  margin: .4rem 0 .6rem;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  line-height: 1.75;
+}
+.source-hit small, #model-note, #draft-note, #copy-note { color: var(--archive-muted); font-size: .84rem; }
+.source-hit a { position: absolute; top: 1.35rem; right: 0; font-size: .875rem; padding: .35rem 0; }
+.archive summary { cursor: pointer; padding: .35rem 0; width: fit-content; }
+.source-hit summary { font-size: .925rem; }
+#context-panel, #model-panel, #draft-panel { margin: 1.5rem 0 0; }
+#context { width: 100%; min-height: 10rem; margin: .75rem 0 .4rem; resize: vertical; font-size: .925rem; line-height: 1.65; }
+.copy-controls { gap: .8rem; flex-wrap: wrap; }
+#model-note { margin: .5rem 0; overflow-wrap: anywhere; }
+@media (max-width: 640px) {
+  .archive { width: calc(100% - 2.25rem); padding-block: 2rem 3rem; }
+  .archive h1 { font-size: 2.35rem; margin-bottom: 1.4rem; }
+  .search-row { gap: .5rem; }
+  .search-row .button-primary { padding-inline: 1rem; }
+  .archive .search-row input { min-height: 2.9rem; padding-inline: .65rem; font-size: 1rem; }
+  .filters { gap: .2rem .8rem; }
+  #results { margin-top: 1.8rem; }
+}

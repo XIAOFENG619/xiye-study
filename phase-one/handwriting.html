@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f7f1">
+  <title>纸上默写 · 习页</title>
+  <link rel="icon" href="data:,">
+  <script src="./reading-theme.mjs"></script>
+  <link rel="stylesheet" href="./chinese.css">
+  <link rel="stylesheet" href="./reading-theme.css">
+  <link rel="stylesheet" href="./handwriting.css">
+  <script type="module" src="./handwriting.mjs?v=study-1"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到主要内容</a>
+  <header class="site-head"><div class="mast">
+    <a class="wordmark" href="./#desk"><span class="brand-book" aria-hidden="true"></span>习页</a>
+    <nav aria-label="主导航"><a href="./#poetry">古诗练习</a><a href="./#records">学习记录</a></nav>
+  </div></header>
+  <main class="writing-desk" id="main">
+    <h1>纸上默写</h1>
+    <div class="paper-setup">
+      <label>篇目<select id="poem" disabled></select></label>
+      <label>范围<select id="part" disabled></select></label>
+      <a id="keyboard-link" class="text-link" hidden>切换到键盘默写</a>
+    </div>
+    <details id="reading" hidden><summary>读原文</summary><div id="reading-text"></div><button type="button" id="cover" class="text-link">遮住原文</button></details>
+    <section class="photo-input" aria-label="默写照片">
+      <button type="button" id="pick" class="button-primary" disabled>选择默写照片</button>
+      <input type="file" id="file" accept="image/jpeg,image/png" hidden>
+      <button type="button" id="camera" class="button-secondary" hidden disabled>拍一张照片</button>
+      <input type="file" id="camera-file" accept="image/jpeg,image/png" capture="environment" hidden>
+      <span id="file-hint">从本机选择 JPG 或 PNG 照片</span>
+      <button type="button" id="retry" class="text-link" hidden>重试识别</button>
+      <button type="button" id="reload" class="text-link" hidden>重新载入篇目</button>
+      <button type="button" id="new" class="text-link" hidden>另选篇目</button>
+    </section>
+    <p id="notice" role="status" aria-atomic="true"></p>
+    <section id="review" hidden aria-labelledby="review-title">
+      <div class="review-head"><h2 tabindex="-1" id="review-title">核对纸面</h2><span id="tally"></span></div>
+      <details id="original"><summary>查看整张原图</summary><img id="original-image" alt="本次上传的默写原图"></details>
+      <div id="lines"></div>
+      <details id="add-line">
+        <summary>补一行漏识的笔迹</summary>
+        <form id="manual-form" class="paper-editor">
+          <label>对应原句<input name="reference" required list="available-references"></label>
+          <label>纸上实际写的字<input name="actual" placeholder="整行确实漏写时可留空"></label>
+          <button class="button-secondary">加入核对</button>
+        </form>
+      </details>
+      <datalist id="available-references"></datalist>
+      <div class="finish"><button type="button" class="button-primary" id="save">保存核对结果</button><a id="study-next" hidden>按本次默写巩固</a><a href="./#records" id="history-link" hidden>查看学习记录</a></div>
+    </section>
+    <noscript>请开启 JavaScript 后选择照片。</noscript>
+  </main>
+</body>
+</html>

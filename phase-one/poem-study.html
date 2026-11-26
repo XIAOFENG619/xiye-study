@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f7f1">
+  <title>学习古诗 · 习页</title>
+  <link rel="icon" href="data:,">
+  <script src="./reading-theme.mjs"></script>
+  <link rel="stylesheet" href="./chinese.css">
+  <link rel="stylesheet" href="./reading-theme.css">
+  <link rel="stylesheet" href="./poem-study.css?v=recall-2">
+  <script type="module" src="./poem-study.mjs?v=recall-2"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到学习古诗</a>
+  <header class="site-head"><div class="mast">
+    <a class="wordmark" href="./#desk"><span class="brand-book" aria-hidden="true"></span>习页</a>
+    <nav aria-label="主导航"><a href="./#poetry-modes">古诗练习</a><a href="./#records">学习记录</a></nav>
+  </div></header>
+  <main id="main" class="poem-study" tabindex="-1">
+    <h1>学习古诗</h1>
+    <div class="study-scope">
+      <label>篇目<select id="poem" disabled></select></label>
+      <label>段落<select id="part" disabled></select></label>
+    </div>
+    <p id="notice" role="status">正在载入篇目…</p>
+    <button id="reload" class="text-link" type="button" hidden>重新载入篇目</button>
+    <section class="study-page" id="reading" aria-labelledby="read-title" hidden>
+      <h2 id="read-title" tabindex="-1">读原文</h2>
+      <p id="reading-text" class="source-lines"></p>
+      <button id="cover" class="button-primary" type="button">遮住原文，开始试背</button>
+    </section>
+    <section class="study-page" id="recall" aria-labelledby="recall-title" hidden>
+      <h2 id="recall-title" tabindex="-1">自己背一遍</h2>
+      <p class="study-note">背完后，选最接近这次的情况。</p>
+      <div class="study-actions">
+        <button id="fluent" class="button-primary" type="button">这一段背顺了</button>
+        <button id="stuck" class="button-secondary" type="button" aria-expanded="false" aria-controls="oral-choice">有一句卡住了</button>
+      </div>
+      <div id="oral-choice" hidden>
+        <form id="oral-locate-form">
+          <label for="oral-cue">我背到……</label>
+          <p id="oral-cue-help" class="study-note">写下刚背完那一句里的几个字，接着练下一句。</p>
+          <input id="oral-cue" type="text" aria-describedby="oral-cue-help" autocomplete="off" spellcheck="false">
+          <div class="study-actions" id="oral-match-row" hidden>
+            <label>刚背过的是哪一处？<select id="oral-match"></select></label>
+          </div>
+          <p id="oral-cue-status" class="study-note" role="status"></p>
+          <button id="oral-locate-go" class="button-secondary" type="submit" disabled>练下一句</button>
+        </form>
+        <details id="oral-order"><summary>按小句序号选</summary>
+          <form id="oral-order-form" class="study-actions">
+            <label>卡住的位置<select id="oral-clause"></select></label>
+            <button class="button-secondary" type="submit">练这一句</button>
+          </form>
+        </details>
+      </div>
+      <div class="study-links"><a id="keyboard">键盘默写</a><a id="paper">纸上默写</a><button class="text-link" id="reread" type="button">再看原文</button></div>
+    </section>
+    <section class="study-page" id="practice" aria-labelledby="practice-title" hidden>
+      <h2 id="practice-title" tabindex="-1">本段巩固</h2>
+      <p class="study-note" id="reason"></p>
+      <p id="prompt" class="study-prompt"></p>
+      <form id="write" hidden>
+        <label for="answer">默写原句</label>
+        <textarea id="answer" rows="2" autocomplete="off" autocorrect="off" spellcheck="false"></textarea>
+        <div class="study-actions">
+          <button id="submit" class="button-primary" type="submit" disabled>核对</button>
+          <button id="hint" class="text-link" type="button" aria-expanded="false" aria-controls="clue">给我一点提示</button>
+          <button id="reveal" class="text-link" type="button">想不起来，看原句</button>
+        </div>
+        <p id="clue" class="study-clue" hidden></p>
+      </form>
+      <div id="feedback" class="study-feedback" hidden>
+        <h3 id="verdict" tabindex="-1"></h3>
+        <dl><dt id="mine-label">我写的</dt><dd id="mine"></dd><dt>原句</dt><dd id="expected"></dd></dl>
+      </div>
+      <div class="study-actions">
+        <button id="retry-line" type="button" class="button-primary" hidden>遮住，重写这一句</button>
+        <button id="next-weak" type="button" class="button-secondary" hidden>练下一处错漏</button>
+        <button id="follow-scene" type="button" class="button-secondary" hidden>换个情境考我</button>
+        <a id="pending-paper" hidden>重选原照片继续核对</a>
+        <button id="next-part" type="button" class="button-secondary" hidden>读下一段</button>
+      </div>
+      <details id="alternatives"><summary>自己选怎么练</summary>
+        <form id="choose-line" class="study-actions">
+          <label>指定一句<select id="clause"></select></label>
+          <button class="button-secondary" type="submit">练选中的句子</button>
+        </form>
+        <div class="study-links">
+          <button id="weak" class="text-link" type="button">练刚才卡住的句子</button>
+          <button id="scene" class="text-link" type="button">换个情境考我</button>
+          <button id="restart" class="text-link" type="button">重读这一段</button>
+        </div>
+      </details>
+    </section>
+    <noscript>请开启 JavaScript 后学习古诗。</noscript>
+  </main>
+</body>
+</html>

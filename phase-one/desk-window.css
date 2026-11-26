@@ -1,0 +1,211 @@
+/* The paper, caption and hit map share the same proportions at every width. */
+.desk-plate {
+  --turn-ease: cubic-bezier(.22, 1, .36, 1);
+  position: relative;
+  align-self: center;
+  isolation: isolate;
+  container-type: inline-size;
+  width: 100%;
+  aspect-ratio: 9 / 10;
+  overflow: hidden;
+  touch-action: pan-y pinch-zoom;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.desk-grade-defs { position: absolute; pointer-events: none; }
+.desk-plane, .desk-pictures, .landscape-slot, .desk-mist, .desk-mist div, .desk-ink, .desk-verse, .desk-hotspots, .desk-canvas {
+  position: absolute;
+  inset: 0;
+}
+.desk-plane { overflow: hidden; }
+/* The blended images meet the same paper as the page. Only the image layer
+   is feathered: seals, hit targets and the focus ring retain crisp edges. */
+.base-plane {
+  background-color: var(--paper);
+  --paper-edge-x: linear-gradient(90deg, transparent 0%, #000 11%, #000 90%, transparent 100%);
+  --paper-edge-y: linear-gradient(180deg, transparent 0%, #000 8%, #000 90%, transparent 100%);
+  -webkit-mask-image: var(--paper-edge-x), var(--paper-edge-y);
+  -webkit-mask-composite: source-in;
+  mask-image: var(--paper-edge-x), var(--paper-edge-y);
+  mask-composite: intersect;
+}
+.desk-pictures { mix-blend-mode: multiply; }
+.landscape-slot { opacity: 0; overflow: hidden; }
+.landscape-slot.resting { opacity: 1; }
+.landscape-slot img {
+  display: block;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: var(--picture-position);
+  filter: var(--grade) brightness(1) saturate(1);
+  transition: filter 800ms ease-in-out;
+}
+:root[data-reading-theme="dusk"] .landscape-slot img {
+  filter: var(--grade) brightness(var(--night-light)) saturate(var(--night-chroma));
+}
+.landscape-slot.arriving {
+  z-index: 1;
+  animation: turn-sheet var(--fade-time) var(--turn-ease) both;
+}
+@keyframes turn-sheet { from { opacity: 0; } to { opacity: 1; } }
+
+/* 固定在画幅上的两层薄雾。 */
+.mist-plane { pointer-events: none; }
+.desk-mist::before {
+  content: '';
+  position: absolute;
+  inset: 0 -18%;
+  background:
+    radial-gradient(ellipse 52% 11% at 32% 44%, rgb(250 247 230 / .14), transparent 76%),
+    radial-gradient(ellipse 44% 8% at 72% 62%, rgb(244 246 234 / .11), transparent 78%);
+  opacity: calc(1 - var(--reading-dusk) * .35);
+}
+.desk-mist div {
+  inset: 0 -14%;
+  background:
+    radial-gradient(ellipse 48% 9% at 58% 52%, rgb(249 246 224 / .16), transparent 76%),
+    radial-gradient(ellipse 38% 6% at 28% 58%, rgb(245 245 230 / .13), transparent 78%);
+  opacity: calc(1 - var(--reading-dusk) * .35);
+}
+
+/* 顶层：轻盈留白题跋与小巧朱砂印 */
+.desk-verse, .desk-hotspots, .desk-canvas { pointer-events: none; }
+.desk-canvas { width: 100%; height: 100%; }
+.inscription { position: absolute; }
+.inscription-block {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0 0 1.48em .66em;
+  font-size: clamp(14px, 3.85cqw, 25px);
+}
+.ink-lines {
+  display: flex;
+  flex-direction: row-reverse;
+  column-gap: .28em;
+  align-items: flex-start;
+  color: color-mix(in srgb, rgb(44 53 49 / .76), rgb(60 45 31 / .8) var(--reading-dusk));
+  font-family: var(--serif);
+  font-weight: 500;
+  line-height: 1.06;
+  letter-spacing: .2em;
+  text-shadow: 0 1px 8px color-mix(in srgb, rgb(248 245 234 / .32), rgb(236 216 176 / .16) var(--reading-dusk));
+  transition: color 800ms ease-in-out;
+}
+.ink-lines span {
+  writing-mode: vertical-rl;
+  white-space: nowrap;
+  animation: ink-unfold 780ms var(--turn-ease) both;
+}
+.ink-lines span:nth-child(2) {
+  margin-top: .86em;
+  animation-delay: 180ms;
+}
+@keyframes ink-unfold {
+  from { opacity: 0; clip-path: inset(0 0 100% 0); }
+  28% { opacity: .48; }
+  to { opacity: 1; clip-path: inset(0 0 0 0); }
+}
+.desk-seal {
+  position: absolute;
+  left: .06em;
+  bottom: .04em;
+  width: .76em;
+  height: 1.26em;
+  color: color-mix(in srgb, #b83b2a, #9c3829 var(--reading-dusk));
+  opacity: .82;
+  transform: rotate(-1.6deg);
+  filter: drop-shadow(0 1px 1px rgb(86 24 16 / .12));
+  animation: press-seal 460ms 620ms var(--turn-ease) backwards;
+}
+.desk-seal text { fill: #f8ead4; font: 600 12.6px "Songti SC", STSong, serif; }
+@keyframes press-seal {
+  from { opacity: 0; transform: translateY(-2px) scale(.95) rotate(-1.6deg); }
+  to { opacity: .82; transform: translateY(0) scale(1) rotate(-1.6deg); }
+}
+.inscription.fading {
+  opacity: 0;
+  filter: blur(1px);
+  transition: opacity 280ms ease-out, filter 280ms ease-out;
+}
+
+/* 隐形热区与红日暖光呼吸 */
+[data-hotspot] { position: absolute; pointer-events: auto; }
+button[data-hotspot="sun"] {
+  appearance: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+button[data-hotspot="sun"]::before {
+  content: '';
+  position: absolute;
+  inset: -18%;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse,
+    transparent 26%,
+    rgb(239 175 91 / .2) 50%,
+    rgb(232 146 78 / .07) 66%,
+    transparent 78%
+  );
+  opacity: 0;
+  transform: scale(.96);
+  transition: opacity 420ms var(--turn-ease), transform 420ms var(--turn-ease);
+}
+button[data-hotspot="sun"]:focus-visible::before {
+  opacity: 1;
+  animation: sun-warmth 3.6s ease-in-out infinite alternate;
+}
+@media (hover: hover) and (pointer: fine) {
+  button[data-hotspot="sun"]:hover::before {
+    opacity: 1;
+    animation: sun-warmth 3.6s ease-in-out infinite alternate;
+  }
+}
+@media (any-pointer: coarse) {
+  button[data-hotspot="sun"]::after {
+    content: "";
+    position: absolute;
+    left: 50%; top: 0;
+    width: max(100%, 44px); height: max(100%, 44px);
+    transform: translateX(-50%);
+  }
+}
+@keyframes sun-warmth {
+  from { opacity: .5; transform: scale(.97); }
+  to { opacity: 1; transform: scale(1.06); }
+}
+button[data-hotspot="sun"]:focus-visible { outline-offset: 2px; }
+[data-hotspot="water"], [data-hotspot="sky"] { cursor: pointer; }
+
+/* DEBUG_HOTSPOTS = true 时的淡虚线标定框 */
+[data-debug] :is([data-hotspot],[data-inscription]) {
+  outline: 1px dashed #9a543f;
+  outline-offset: -1px;
+  background-color: rgb(250 238 205 / .14);
+}
+[data-debug] [data-guide]::after {
+  content: attr(data-guide);
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: #753e2d;
+  background: #f9edcc;
+  padding: 0 3px;
+  font: 11px/1.5 var(--sans);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .desk-plate *,
+  .desk-plate ::before,
+  .desk-plate ::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .landscape-slot.arriving { opacity: 1; }
+}

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f7f1">
+  <title>辅助学习 · 习页</title>
+  <link rel="icon" href="data:,">
+  <script src="./reading-theme.mjs"></script>
+  <link rel="stylesheet" href="./chinese.css">
+  <link rel="stylesheet" href="./reading-theme.css">
+  <link rel="stylesheet" href="./screening-demo.css">
+  <link rel="stylesheet" href="./assisted.css">
+  <script type="module" src="./assisted.mjs"></script>
+</head>
+<body>
+  <a class="skip-link" href="#assisted">跳到辅助题</a>
+  <header class="site-head"><div class="mast">
+    <a class="wordmark" href="./#desk"><span class="brand-book" aria-hidden="true"></span>习页</a>
+    <nav aria-label="主导航"><a id="screen-link" href="./screening.html">返回筛查</a><a href="./#records">学习记录</a></nav>
+  </div></header>
+  <main id="assisted" class="screening" tabindex="-1">
+    <h1 id="title">辅助学习</h1>
+    <p id="notice" role="status"></p>
+    <section id="task" aria-labelledby="prompt" hidden>
+      <p id="step"></p>
+      <h2 id="prompt" tabindex="-1"></h2>
+      <p id="context"></p>
+      <div id="choices" role="group" aria-labelledby="prompt" hidden></div>
+      <form id="write" hidden>
+        <label id="label" for="answer"></label>
+        <div class="write-row">
+          <input id="answer" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" required>
+          <button id="submit" class="button-primary" type="submit">核对</button>
+        </div>
+      </form>
+      <div class="tools">
+        <button id="listen" class="text-link" type="button" hidden>听读音</button>
+        <button id="hint" class="text-link" type="button" aria-controls="clue" aria-expanded="false" hidden>查看线索</button>
+      </div>
+      <p id="clue" hidden></p>
+      <div id="feedback" role="status" hidden><strong id="verdict"></strong><p id="explanation"></p></div>
+    </section>
+    <p id="empty" hidden></p>
+    <div class="assist-actions">
+      <a id="review" class="button-primary" hidden>开始独立复考</a>
+      <button id="next" class="button-secondary" type="button" hidden>下一词</button>
+      <a id="return" href="./screening.html" hidden>回到筛查</a>
+    </div>
+    <noscript>请开启 JavaScript 后进行辅助学习。</noscript>
+  </main>
+</body>
+</html>

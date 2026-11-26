@@ -1,0 +1,23 @@
+ONNX Runtime Web 1.22.0
+Copyright (c) Microsoft Corporation. MIT license.
+https://www.npmjs.com/package/onnxruntime-web/v/1.22.0
+https://github.com/microsoft/onnxruntime/releases/tag/v1.22.0
+The packaged JavaScript and WebAssembly runtime files come from the npm release.
+ONNXRuntime-LICENSE.txt and ONNXRuntime-ThirdPartyNotices.txt are the upstream license and notices distributed with ONNX Runtime 1.22.0.
+
+PP-OCRv4 text detection and PP-OCRv5 mobile text recognition
+PaddleOCR authors. Apache License 2.0. See PaddleOCR-LICENSE.txt.
+https://github.com/PaddlePaddle/PaddleOCR
+https://www.paddleocr.ai/main/en/version3.x/algorithm/PP-OCRv5/PP-OCRv5.html
+
+ONNX conversion and distribution
+RapidOCR authors. Apache License 2.0. See RapidOCR-LICENSE.txt.
+https://github.com/RapidAI/RapidOCR
+detect.onnx is ch_PP-OCRv4_det_infer.onnx from rapidocr-onnxruntime 1.4.4.
+https://pypi.org/project/rapidocr-onnxruntime/1.4.4/
+SHA-256 d2a7720d45a54257208b1e13e36a8479894cb74155a5efe29462512d42f49da9
+
+read.onnx is ch_PP-OCRv5_rec_mobile.onnx from RapidAI/RapidOCR v3.10.0.
+https://www.modelscope.cn/models/RapidAI/RapidOCR/resolve/v3.10.0/onnx/PP-OCRv5/rec/ch_PP-OCRv5_rec_mobile.onnx
+SHA-256 5825fc7ebf84ae7a412be049820b4d86d77620f204a041697b0494669b1742c5
+Both model files are distributed unmodified. alphabet.json is derived from read.onnx character metadata, with CTC blank and space labels.

@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f7f1">
+  <title>键盘默写 · 习页</title>
+  <link rel="icon" href="data:,">
+  <script src="./reading-theme.mjs"></script>
+  <link rel="stylesheet" href="./chinese.css">
+  <link rel="stylesheet" href="./reading-theme.css">
+  <link rel="stylesheet" href="./keyboard.css">
+  <script type="module" src="./keyboard.mjs?v=recall-2"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到主要内容</a>
+  <header class="site-head"><div class="mast">
+    <a class="wordmark" href="./#desk"><span class="brand-book" aria-hidden="true"></span>习页</a>
+    <nav aria-label="主导航"><a href="./#poetry">古诗练习</a><a href="./#records">学习记录</a></nav>
+  </div></header>
+  <main id="main" class="recitation" tabindex="-1">
+    <div class="recitation-head"><h1>键盘默写</h1><a id="paper-link" href="./handwriting.html">切换到纸上默写</a></div>
+    <div id="setup" class="recitation-setup">
+      <label>篇目<select id="poem" disabled></select></label>
+      <label>默写范围<select id="part" disabled></select></label>
+    </div>
+    <p id="notice" role="status" aria-live="polite"></p>
+    <button type="button" id="retry" class="text-link" hidden>重新载入篇目</button>
+    <section id="reading" class="recitation-page" hidden aria-labelledby="reading-heading">
+      <h2 id="reading-heading">读原文</h2>
+      <p class="poem-text" id="reading-text"></p>
+      <button id="cover" type="button" class="button-primary">遮住原文，开始默写</button>
+    </section>
+    <form id="writing" class="recitation-page" hidden>
+      <label for="answer" class="section-heading">默写原文</label>
+      <textarea id="answer" name="answer" autocomplete="off" autocorrect="off" spellcheck="false" aria-describedby="answer-hint" rows="5"></textarea>
+      <div id="answer-hint">按原句顺序输入，标点和换行不计入错漏。</div>
+      <div class="recitation-actions">
+        <button id="submit" type="submit" class="button-primary" disabled>提交默写</button>
+        <button id="blank" type="button" class="text-link">想不起来，直接核对</button>
+      </div>
+    </form>
+    <section id="feedback" class="recitation-page" hidden aria-labelledby="feedback-title">
+      <h2 id="feedback-title" tabindex="-1">默写核对</h2>
+      <p id="summary" role="status"></p>
+      <div id="comparison" class="poem-text" aria-label="逐字对照"></div>
+      <details id="originals"><summary>查看我的原稿和原文</summary>
+        <dl><dt>我的原稿</dt><dd id="original-answer"></dd><dt>本段原文</dt><dd id="original-reference"></dd></dl>
+      </details>
+      <div class="recitation-actions">
+        <a id="study-next" hidden>按本次默写巩固</a>
+        <button id="again" type="button" class="button-secondary">再默写一次</button>
+        <button id="retry-save" type="button" class="text-link" hidden>重试保存记录</button>
+        <a href="./#records">查看学习记录</a>
+      </div>
+    </section>
+    <noscript>请开启 JavaScript 后进行默写。</noscript>
+  </main>
+</body>
+</html>

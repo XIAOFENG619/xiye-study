@@ -1,0 +1,46 @@
+.poem-study { width: min(48rem, calc(100% - 3rem)); margin: clamp(2.5rem, 5vw, 4.5rem) auto 5rem; }
+.poem-study h1 { margin: 0; font-size: clamp(2.15rem, 4.1vw, 3.25rem); font-weight: 600; }
+.poem-study h2 { margin: 0 0 .6rem; font-size: 1.55rem; }
+.study-scope, .study-actions, .study-links { display: flex; flex-wrap: wrap; align-items: end; gap: .8rem 1.25rem; }
+.study-scope { margin: 1.6rem 0 2rem; }
+.study-scope label, .study-actions label { display: grid; gap: .35rem; min-width: 0; color: var(--muted); font-size: .9rem; }
+.poem-study select { color: var(--ink); max-width: 100%; }
+.study-scope select { min-width: 7rem; }
+.study-page { padding-top: 1.7rem; border-top: 1px solid var(--rule); }
+.source-lines, .study-prompt, .study-feedback dd, .poem-study textarea {
+  font: 500 clamp(1.15rem, 2.2vw, 1.4rem)/1.95 var(--serif);
+  white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.source-lines { margin: 1.1rem 0 1.8rem; }
+.study-note, .poem-study #notice, .study-feedback dt { color: var(--muted); }
+.poem-study #notice:empty, .study-actions:empty { display: none; }
+.study-actions, .study-links { align-items: center; }
+.study-actions:has(label) { align-items: end; }
+.study-links, #oral-choice { margin-top: 1.35rem; }
+#oral-locate-form { display: grid; justify-items: start; gap: .55rem; }
+#oral-locate-form > label { font: 600 1.15rem/1.5 var(--serif); }
+#oral-locate-form .study-note { margin: 0; font-size: .92rem; line-height: 1.6; }
+#oral-cue { width: min(100%, 23rem); min-width: 0; }
+#oral-cue-status:empty { display: none; }
+#oral-choice #oral-order { border: 0; margin-top: .6rem; padding: 0; }
+.study-prompt { margin: 1rem 0; }
+.poem-study textarea { display: block; width: 100%; margin: .4rem 0 .9rem; padding: .65rem .85rem; resize: vertical; }
+.study-clue { color: var(--green); margin-bottom: 0; }
+.study-feedback { margin-bottom: 1rem; }
+.study-feedback h3 { margin: 0 0 .75rem; color: var(--green); font-size: 1.2rem; }
+.study-feedback dl { margin: 0; }
+.study-feedback dt { font-size: .86rem; }
+.study-feedback dd { margin: .1rem 0 .6rem; }
+.study-feedback [data-change] { display: inline-block; padding: 0 .22em; margin: 0 .06em; background: var(--wash); line-height: 1.65; white-space: nowrap; }
+.study-feedback [data-change] small { margin-right: .22em; font: 600 .66em/1.4 var(--sans); color: var(--muted); }
+.study-feedback del { color: var(--focus); text-decoration-thickness: .08em; }
+.study-feedback ins { color: var(--green); text-underline-offset: .16em; }
+.study-feedback .arrow { margin-inline: .16em; color: var(--muted); font: .74em var(--sans); }
+.poem-study details { border-top: 1px solid var(--rule); margin-top: 1.8rem; padding-top: .8rem; }
+.poem-study summary { width: fit-content; padding: .4rem 0; color: var(--green); }
+.poem-study details[open] summary { margin-bottom: .65rem; }
+@media (max-width: 530px) {
+  .poem-study { width: calc(100% - 2rem); }
+  .study-scope { display: grid; grid-template-columns: minmax(0, 1fr) minmax(5.5rem, .4fr); gap: .75rem; }
+  .study-scope select { width: 100%; min-width: 0; }
+}

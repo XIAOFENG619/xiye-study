@@ -1,0 +1,40 @@
+@font-face {
+  font-family: "Xiye Desk Song";
+  src: url("./assets/desk-song.woff2") format("woff2");
+  font-weight: 400 600;
+  font-display: swap;
+}
+
+/* One inherited percentage carries the ink, paper and canvas through dusk together. */
+@property --reading-dusk {
+  syntax: "<percentage>";
+  inherits: true;
+  initial-value: 0%;
+}
+
+:root {
+  --reading-dusk: 0%;
+  --paper-day: #f6f2e9;
+  --paper-dusk: #e6d4ae;
+  --desk-bg: #e8e3d9;
+  --paper: color-mix(in srgb, var(--paper-day), var(--paper-dusk) var(--reading-dusk));
+  --sheet: color-mix(in srgb, #faf7f1, #f0dfbd var(--reading-dusk));
+  --ink: color-mix(in srgb, #232825, #382e23 var(--reading-dusk));
+  --muted: color-mix(in srgb, #68706b, #5b4d39 var(--reading-dusk));
+  --green: color-mix(in srgb, #4b6658, #594a2d var(--reading-dusk));
+  --ink-stone: color-mix(in srgb, #979e99, #998973 var(--reading-dusk));
+  --rule: color-mix(in srgb, #d7d5ca, #b7a785 var(--reading-dusk));
+  --focus: color-mix(in srgb, #a64132, #854424 var(--reading-dusk));
+  --seal: color-mix(in srgb, #b84a39, #8b422e var(--reading-dusk));
+  --wash: color-mix(in srgb, #e7e9de, #dac8a3 var(--reading-dusk));
+  --edge: color-mix(in srgb, #869084, #887553 var(--reading-dusk));
+  --chosen: color-mix(in srgb, #e0e7dc, #d8c397 var(--reading-dusk));
+  --on-accent: color-mix(in srgb, #fff, #fff1d1 var(--reading-dusk));
+  transition: --reading-dusk 800ms ease-in-out;
+}
+
+:root[data-reading-theme="dusk"] { --reading-dusk: 100%; }
+
+@media (prefers-reduced-motion: reduce) {
+  :root { transition: none; }
+}

@@ -1,0 +1,42 @@
+.writing-desk { max-width: 850px; width: calc(100% - 40px); margin: clamp(32px,6vw,72px) auto 80px; }
+.writing-desk h1 { font-size: clamp(34px, 4.1vw, 52px); margin: 0 0 24px; font-weight: 600; }
+.writing-desk h2 { font-size: clamp(25px, 3vw, 32px); margin: 0; }
+.paper-setup { display: flex; flex-wrap: wrap; align-items: end; gap: 12px 28px; }
+.paper-setup label, .paper-editor label { display: grid; gap: 5px; color: var(--muted); font-size: .88rem; }
+.paper-setup select, .paper-editor input { color: var(--ink); min-width: 0; }
+.paper-setup select { min-width: 10em; }
+.writing-desk summary { width: fit-content; max-width: 100%; padding: 7px 0; color: var(--green); }
+#reading { margin-top: 12px; }
+#reading-text { border-left: 2px solid var(--rule); margin: 8px 0; padding-left: 18px; font: 1.12rem/1.9 var(--serif); white-space: pre-line; overflow-wrap: anywhere; }
+.photo-input, .finish, .review-head, .line-actions { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
+.photo-input { margin-top: 24px; }
+#file-hint, #tally, .line-state, #notice { color: var(--muted); font-size: .9rem; }
+#file-hint { overflow-wrap: anywhere; min-width: 0; }
+#notice { margin: 12px 0; }
+#notice:empty { display: none; }
+#review { border-top: 1px solid var(--edge); margin-top: 26px; padding-top: 24px; }
+.review-head { justify-content: space-between; }
+#original { margin: 10px 0 18px; }
+#original img { display: block; max-width: 100%; max-height: 75vh; object-fit: contain; margin: 8px 0; }
+#lines > details, #add-line { padding-block: 5px; border-block-start: 1px solid var(--rule); }
+.review-line { padding: 13px 0 22px; border-block-start: 1px solid var(--rule); }
+.review-line header { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.review-line h3 { margin: 0; font-size: 1.21rem; }
+.line-evidence { display: grid; grid-template-columns: minmax(135px,.8fr) minmax(0,1.2fr); gap: 16px 22px; align-items: start; margin: 12px 0; }
+.line-evidence figure { margin: 0; }
+.line-evidence figcaption, .comparison dt { color: var(--muted); font-size: .84rem; }
+.hand-crop { display: block; max-width: 100%; max-height: 100px; object-fit: contain; object-position: left; margin-top: 4px; background: var(--sheet); }
+.comparison { display: grid; grid-template-columns: max-content minmax(0,1fr); gap: 3px 12px; align-items: baseline; margin: 0; }
+.comparison dd { margin: 0; font: 1.1rem/1.6 var(--serif); overflow-wrap: anywhere; }
+.comparison mark { color: var(--ink); background: var(--wash); text-decoration: underline solid var(--focus); text-underline-offset: .2em; }
+.paper-editor { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); align-items: end; gap: 10px; padding: 12px 0; }
+.paper-editor .edit-buttons { grid-column: 1/-1; display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+.paper-editor button { justify-self: start; }
+.finish { border-top: 1px solid var(--edge); padding-top: 18px; margin-top: 10px; }
+.no-issues { color: var(--green); margin: 16px 0 22px; }
+@media(max-width: 600px) {
+  .line-evidence, .paper-editor { grid-template-columns: 1fr; }
+  .paper-setup { display: grid; grid-template-columns: 1fr; gap: 8px; }
+  .line-evidence { gap: 12px; }
+  .line-actions { gap: 8px 12px; }
+}

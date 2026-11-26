@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f7f1">
+  <title>资料库 · 习页</title>
+  <link rel="icon" href="data:,">
+  <script src="./reading-theme.mjs"></script>
+  <link rel="stylesheet" href="./chinese.css">
+  <link rel="stylesheet" href="./rag.css">
+  <link rel="stylesheet" href="./reading-theme.css">
+  <script type="module" src="./rag.mjs?v=ready-1"></script>
+</head>
+<body>
+  <a class="skip-link" href="#archive">跳到主要内容</a>
+  <header class="site-head"><div class="mast site-width">
+    <a class="wordmark" href="./#desk" aria-label="习页，回到练习书桌"><span class="brand-book" aria-hidden="true"></span>习页</a>
+    <nav aria-label="主导航">
+      <a href="./#desk">练习书桌</a>
+      <a href="./#records">学习记录</a>
+      <a href="./rag.html" aria-current="page">资料库</a>
+    </nav>
+  </div></header>
+  <main id="archive" class="archive site-width" tabindex="-1">
+    <h1>语文资料库</h1>
+    <form id="search-form" role="search" aria-label="检索语文资料">
+      <div class="search-row">
+        <label for="query" class="a11y-only">词语、篇名或原文</label>
+        <input id="query" name="q" type="search" placeholder="输入词语、篇名或原文" required maxlength="300" disabled>
+        <button class="button-primary" type="submit" disabled>检索</button>
+      </div>
+      <div class="filters">
+        <label>范围 <select name="section" disabled><option value="all">全部资料</option><option value="poetry">古诗</option><option value="sound">字音</option><option value="spelling">字形</option><option value="reference">训练册原页</option></select></label>
+        <label>用途 <select name="mode" disabled><option value="lookup">查阅资料</option><option value="exercise">出题取材</option></select></label>
+      </div>
+    </form>
+    <div class="quick-search" id="quick-search"><span>试查</span>
+      <button type="button" disabled>角色</button><button type="button" disabled>完璧归赵</button><button type="button" disabled>将进酒</button>
+    </div>
+    <p id="message" class="library-status" role="status"></p>
+    <section id="results" aria-labelledby="result-title" hidden>
+      <div class="result-head"><h2 id="result-title"></h2><span id="hit-count" role="status"></span></div>
+      <div id="hits"></div>
+      <details id="context-panel"><summary>给 AI 的资料摘录</summary>
+        <textarea id="context" readonly aria-label="给 AI 的资料摘录"></textarea>
+        <div class="copy-controls"><button class="button-secondary" id="copy" type="button">复制摘录</button><span id="copy-note" role="status"></span></div>
+      </details>
+      <div id="model-panel" hidden>
+        <button id="ask" class="button-primary" aria-describedby="model-note">请 AI 拟一道题</button>
+        <p id="model-note"></p><p id="draft-note" role="status"></p>
+      </div>
+      <section id="draft-panel" hidden><h2>AI 练习草稿</h2><p id="draft"></p></section>
+    </section>
+  </main>
+</body>
+</html>
