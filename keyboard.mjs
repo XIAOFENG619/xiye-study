@@ -1,6 +1,6 @@
 import { classFetch as fetch } from './class-api.mjs';
 import { splitPoemParts } from './poem-parts.mjs';
-import { compareRecitation } from './keyboard-compare.mjs';
+import { compareRecitation, comparisonFragment, differenceSummary } from './keyboard-compare.mjs?v=recall-2';
 import { getKeyboardAttempt, saveKeyboardAttempt } from './keyboard-history.mjs';
 import { keyboardStudyResult } from './poem-study-evidence.mjs';
 import { readStudyEvidence, writeStudyEvidence } from './poem-study-state.mjs';
@@ -102,48 +102,14 @@ function startAttempt() {
   keepDraft();
 }
 
-function markedChange(segment) {
-  const tag = document.createElement('span');
-  tag.dataset.change = segment.type;
-  tag.dataset.actual = segment.actual;
-  tag.dataset.expected = segment.expected;
-  const label = document.createElement('small');
-  label.textContent = {replace: '错', missing: '漏', extra: '多'}[segment.type];
-  tag.append(label);
-  if (segment.actual) {
-    const written = document.createElement('del');
-    written.textContent = segment.actual;
-    tag.append(written);
-  }
-  if (segment.type === 'replace') {
-    const arrow = document.createElement('span');
-    arrow.className = 'arrow';
-    arrow.textContent = '→';
-    tag.append(arrow);
-  }
-  if (segment.expected) {
-    const expected = document.createElement('ins');
-    expected.textContent = segment.expected;
-    tag.append(expected);
-  }
-  return tag;
-}
-
 function feedback(saved, evidenceId) {
   changePhase('feedback');
   const {answer, reference} = attempt;
   const grade = compareRecitation(answer, reference);
   const summary = $('summary');
   for (const key of ['wrong','missing','extra']) summary.dataset[key] = String(grade[key]);
-  summary.textContent = grade.correct ? '用字全部正确。' :
-    [['wrong','写错'], ['missing','漏写'], ['extra','多写']].filter(([key])=>grade[key])
-      .map(([key, label]) => label + ' ' + grade[key] + ' 字').join(' · ');
-  const comparison = document.createDocumentFragment();
-  for (const seg of grade.segments) {
-    if (seg.type === 'equal' || seg.type === 'separator') comparison.append(seg.expected);
-    else comparison.append(markedChange(seg));
-  }
-  $('comparison').replaceChildren(comparison);
+  summary.textContent = grade.correct ? '用字全部正确。' : differenceSummary(grade);
+  $('comparison').replaceChildren(comparisonFragment(grade.segments));
   $('original-answer').textContent = answer || '（未填写）';
   $('original-reference').textContent = reference;
   $('feedback-title').textContent = '《' + attempt.poemTitle + '》' + (attempt.part ? '第 ' + attempt.part + ' 段' : '全篇') + ' · 默写核对';

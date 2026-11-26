@@ -2,7 +2,7 @@ import { classFetch as fetch } from './class-api.mjs';
 import { renderHome } from './chinese-home.mjs?v=study-1';
 import { isClassEdition } from './practice-edition.mjs';
 import { mountDeskWindow } from './desk-window.mjs';
-import { renderActive, renderModeMenu, renderPoemCatalog, renderRecords, escapeHtml } from './chinese-views.mjs?v=study-1';
+import { renderActive, renderModeMenu, renderPoemCatalog, renderRecords, escapeHtml } from './chinese-views.mjs?v=recall-2';
 import { dueMistakes, feedbackKeys, loadState, saveState, step } from './chinese-state.mjs';
 import { listPaperReviews, paperReviewPrefix } from './handwriting-history.mjs';
 import { listKeyboardAttempts, keyboardAttemptPrefix } from './keyboard-history.mjs';

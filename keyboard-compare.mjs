@@ -33,3 +33,43 @@ export function compareRecitation(typed, reference) {
   result.correct = result.wrong + result.missing + result.extra === 0;
   return result;
 }
+
+export function differenceSummary(grade) {
+  return [['wrong', '写错'], ['missing', '漏写'], ['extra', '多写']]
+    .filter(([key]) => grade[key]).map(([key, label]) => label + ' ' + grade[key] + ' 字').join(' · ');
+}
+
+export function comparisonFragment(segments) {
+  const fragment = document.createDocumentFragment();
+  for (const segment of segments) {
+    if (segment.type === 'equal' || segment.type === 'separator') {
+      fragment.append(segment.expected);
+      continue;
+    }
+    const tag = document.createElement('span');
+    tag.dataset.change = segment.type;
+    tag.dataset.actual = segment.actual;
+    tag.dataset.expected = segment.expected;
+    const label = document.createElement('small');
+    label.textContent = { replace: '错', missing: '漏', extra: '多' }[segment.type];
+    tag.append(label);
+    if (segment.actual) {
+      const written = document.createElement('del');
+      written.textContent = segment.actual;
+      tag.append(written);
+    }
+    if (segment.type === 'replace') {
+      const arrow = document.createElement('span');
+      arrow.className = 'arrow';
+      arrow.textContent = '→';
+      tag.append(arrow);
+    }
+    if (segment.expected) {
+      const expected = document.createElement('ins');
+      expected.textContent = segment.expected;
+      tag.append(expected);
+    }
+    fragment.append(tag);
+  }
+  return fragment;
+}

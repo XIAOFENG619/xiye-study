@@ -39,19 +39,23 @@ export function readStudyEvidence(poemId, part, storage = sessionStorage) {
 }
 
 export function saveStudyAttempt(attempt, storage = localStorage) {
-  const { id, poemId, poemTitle, part, source, kind, prompt, answer, expected, usedHint, correct } = attempt;
+  const { id, poemId, poemTitle, part, source, kind, prompt, answer, expected, usedHint, correct, isRewrite = false } = attempt;
   sectionKey(poemId, part);
   if (![id, poemTitle, prompt, expected].every(v => typeof v === 'string' && v.trim()) ||
       typeof answer !== 'string' || typeof usedHint !== 'boolean' || typeof correct !== 'boolean' ||
+      typeof isRewrite !== 'boolean' || (isRewrite && !usedHint) ||
       !['line','scene'].includes(kind) || !['keyboard','paper','oral'].includes(source)) {
     throw new Error('这道巩固题尚未完成。');
   }
   const key = studyAttemptPrefix + id;
   const fields = { id, poemId, poemTitle, part, source, kind, prompt, answer, expected, usedHint, correct };
+  if (isRewrite) fields.isRewrite = true;
   const previous = storage.getItem(key);
   if (previous !== null) {
     const record = JSON.parse(previous);
-    if (Object.keys(fields).some(k => fields[k] !== record[k])) throw new Error('这道题已经提交过了，请换一道再练。');
+    if (Boolean(record.isRewrite) !== isRewrite || Object.keys(fields).some(k => fields[k] !== record[k])) {
+      throw new Error('这道题已经提交过了，请换一道再练。');
+    }
     return record;
   }
   const saved = { ...fields, createdAt: new Date().toISOString() };

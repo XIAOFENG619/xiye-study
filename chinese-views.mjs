@@ -250,6 +250,7 @@ export function renderRecords(state, paperReviews = [], keyboardAttempts = [], s
     const method = a.kind === 'scene' ? '情境默写' : '原句巩固';
     let outcome = a.correct ? '当场答对' : '当场未答对';
     if (!a.answer.trim()) outcome = '未写出 · 已看原句';
+    else if (a.isRewrite) outcome = a.correct ? '看过原句后写对' : '看过原句后仍需练习';
     else if (a.usedHint) outcome = a.correct ? '提示后答对' : '提示后仍需练习';
     const source = { oral: '自己试背', keyboard: '键盘默写', paper: '纸面核对' }[a.source];
     return `<div class="record-row"><div><strong>${esc(a.poemTitle)} · 第 ${esc(a.part)} 段</strong>
